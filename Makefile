@@ -1,12 +1,15 @@
-LDFLAGS=-lpthread
+LDFLAGS=-lpthread -lconfuse
 
-
-SRC=main.c bar.c item.c util.c
+SRC=$(wildcard *.c items/*.c)
 OBJ=${SRC:.c=.o}
 
-.c.o:
+%.o: %.c
 	@echo "compiling...$<"
-	${CC} -g -c ${CFLAGS} $<
+	${CC} -g -c ${CFLAGS} -o $@ $<
+
+items/%.o: items/%.c
+	@echo "compiling items...$<"
+	${CC} -g -c ${CFLAGS} -I.  -o $@ $<
 
 mstatus: ${OBJ}
 	@echo "building..."

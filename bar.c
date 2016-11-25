@@ -2,6 +2,8 @@
 #include <stdio.h>
 
 #include "bar.h"
+#include "config.h"
+#include "util.h"
 
 
 static pthread_t thread;
@@ -30,12 +32,21 @@ static void *start_polling(void *arg) {
 	}
 }
 
-
-void bar_init(struct bar_t *bar) {
+struct bar_t *bar_create() {
+	struct bar_t *bar = smalloc(sizeof(struct bar_t));
 	if (pthread_mutex_init(&mutex, NULL) < 0)
 		die("could not initialize mutex\n");
 	if (pthread_cond_init(&condition, NULL) < 0)
 		die("could not initialize contition\n");
+
+	bar->count = config_get_item_count();
+	bar->items = smalloc(bar->count * sizeof(struct item_t));
+
+	int i;
+	for (i = 0; i < bar->count; i++)
+		item_init(&bar->items[i], config_get_item(i));
+ 
+	return bar;
 }
 
 void bar_loop(struct bar_t *bar) {
@@ -61,8 +72,6 @@ void bar_loop(struct bar_t *bar) {
 }
 
 void bar_destroy(struct bar_t *bar) {
-	int i;
-	
 	if (pthread_cancel(thread) < 0)
 		die("could not cancel polling thread\n");
 	if (pthread_join(thread, NULL) < 0)
@@ -71,9 +80,11 @@ void bar_destroy(struct bar_t *bar) {
 		die("could not destroy mutex\n");
 	if (pthread_cond_destroy(&condition) < 0)
 		die("could not destroy condition\n");
-	
+
+	int i;
 	for (i = 0; i < bar->count; i++)
-		item_destroy(&bar->items[i]);
+		item_clear(&bar->items[i]);
 	
 	sfree(bar->items);
+	sfree(bar);
 }

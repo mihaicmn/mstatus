@@ -6,6 +6,6 @@ struct bar_t {
 	int count;
 };
 
-void bar_init(struct bar_t *bar);
+struct bar_t *bar_create();
 void bar_loop(struct bar_t *bar);
 void bar_destroy(struct bar_t *bar);
