@@ -21,3 +21,15 @@ void sfree(void *ptr) {
 	free(ptr);
 	ptr = NULL;
 }
+
+
+int file_scanf(const char *file, const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	FILE *f = fopen(file, "r");
+	if (f == NULL)
+		return -1;
+	int result = vfscanf(f, fmt, args);
+	fclose(f);
+	return result;
+}

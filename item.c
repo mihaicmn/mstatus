@@ -9,6 +9,8 @@
 static routine_t get_routine(const char *name) {
 	if (STARTS_WITH("cpu_usage", name, 9))
 		return &cpu_usage_routine;
+	else if (STARTS_WITH("cpu_temp", name, 8))
+		return &cpu_temp_routine;
 	die("routine %s not found\n", name);
 }
 
