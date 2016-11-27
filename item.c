@@ -6,7 +6,9 @@
 
 #define TEXT_LENGTH 128
 
-static routine_t get_routine(const char *name) {
+static routine_t get_routine(cfg_t *config) {
+	const char *name = cfg_name(config);
+
 	if (STARTS_WITH("cpu_usage", name, 9))
 		return &cpu_usage_routine;
 	else if (STARTS_WITH("cpu_load", name, 8))
@@ -17,12 +19,15 @@ static routine_t get_routine(const char *name) {
 		return &disk_routine;
 	else if (STARTS_WITH("time", name, 8))
 		return &time_routine;
+	else if (STARTS_WITH("volume", name, 8))
+		return &volume_routine;
+
 	die("routine %s not found\n", name);
 }
 
 void item_init(struct item_t *item, cfg_t *config) {
 	item->config = config;
-	item->routine = get_routine(cfg_name(config));
+	item->routine = get_routine(config);
 	text_init(&item->text, TEXT_LENGTH);
 }
 

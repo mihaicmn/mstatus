@@ -1,4 +1,4 @@
-LDFLAGS=-lpthread -lconfuse
+LDFLAGS=-lpthread -lconfuse -lasound
 
 SRC=$(wildcard *.c items/*.c)
 OBJ=${SRC:.c=.o}

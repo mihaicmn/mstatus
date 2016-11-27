@@ -39,6 +39,14 @@ static cfg_opt_t time_opts[] = {
 	CFG_END()
 };
 
+static cfg_opt_t volume_opts[] = {
+	CFG_STR("format", "%volume", CFGF_NONE),
+	CFG_STR("device", "default", CFGF_NONE),
+	CFG_STR("mixer", "Master", CFGF_NONE),
+	CFG_INT("index", 0, CFGF_NONE),
+	CFG_END()
+};
+
 static cfg_opt_t opts[] = {
 	CFG_SEC("general",	general_opts,	CFGF_NONE),
 	CFG_STR_LIST("items",	"{}",		CFGF_NONE),
@@ -47,6 +55,7 @@ static cfg_opt_t opts[] = {
 	CFG_SEC("cpu_temp",	cpu_temp_opts,	CFGF_NONE),
 	CFG_SEC("disk",		disk_opts,	CFGF_MULTI | CFGF_TITLE),
 	CFG_SEC("time",		time_opts,	CFGF_NONE),
+	CFG_SEC("volume",	volume_opts,	CFGF_MULTI | CFGF_TITLE),
 	CFG_END()
 };
 
