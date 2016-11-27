@@ -29,18 +29,24 @@ static cfg_opt_t cpu_temp_opts[] = {
 	CFG_END()
 };
 
+static cfg_opt_t disk_opts[] = {
+	CFG_STR("format", "%free %used %total", CFGF_NONE),
+	CFG_END()
+};
+
 static cfg_opt_t time_opts[] = { 
 	CFG_STR("format", "%F - %T", CFGF_NONE),
 	CFG_END()
 };
 
 static cfg_opt_t opts[] = {
-	CFG_SEC("general", general_opts, CFGF_NONE),
-	CFG_STR_LIST("items", "{}", CFGF_NONE),
-	CFG_SEC("cpu_usage", cpu_usage_opts, CFGF_NONE),
-	CFG_SEC("cpu_load", cpu_load_opts, CFGF_NONE),
-	CFG_SEC("cpu_temp", cpu_temp_opts, CFGF_NONE),
-	CFG_SEC("time", time_opts, CFGF_NONE),
+	CFG_SEC("general",	general_opts,	CFGF_NONE),
+	CFG_STR_LIST("items",	"{}",		CFGF_NONE),
+	CFG_SEC("cpu_usage",	cpu_usage_opts,	CFGF_NONE),
+	CFG_SEC("cpu_load",	cpu_load_opts,	CFGF_NONE),
+	CFG_SEC("cpu_temp",	cpu_temp_opts,	CFGF_NONE),
+	CFG_SEC("disk",		disk_opts,	CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("time",		time_opts,	CFGF_NONE),
 	CFG_END()
 };
 
@@ -70,15 +76,15 @@ const int config_get_item_count() {
 }
 
 cfg_t *config_get_item(const int index) {
-	const char *selector = cfg_getnstr(config, "items", index);	
+	char *selector = cfg_getnstr(config, "items", index);
 	char *name = NULL;
 	char *title = NULL;
 
 	int i;
 	for (i = 0; i < strlen(selector); i++) {
 		if (selector[i] == ' ') {
-			name = strndup(selector, i-1);
-			title = strdup(selector + i);
+			name = strndup(selector, i);
+			title = selector + i + 1; /* don't duplicate title sice it already contains trailing '\0' */
 			break;
 		}
 	}
@@ -91,7 +97,6 @@ cfg_t *config_get_item(const int index) {
 		section = cfg_getsec(config, selector);
 	
 	sfree(name);
-	sfree(title);
 
 	return section;
 }

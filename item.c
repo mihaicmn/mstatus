@@ -13,6 +13,8 @@ static routine_t get_routine(const char *name) {
 		return &cpu_load_routine;
 	else if (STARTS_WITH("cpu_temp", name, 8))
 		return &cpu_temp_routine;
+	else if (STARTS_WITH("disk", name, 4))
+		return &disk_routine;
 	else if (STARTS_WITH("time", name, 8))
 		return &time_routine;
 	die("routine %s not found\n", name);
