@@ -6,6 +6,7 @@
 void text_init(struct text_t *text, size_t capacity) {
 	text->content = smalloc(capacity * sizeof(char));
 	text->capacity = capacity;
+	text->color = NULL;
 }
 
 void text_clear(struct text_t *text) {

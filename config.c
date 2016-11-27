@@ -29,12 +29,18 @@ static cfg_opt_t cpu_temp_opts[] = {
 	CFG_END()
 };
 
+static cfg_opt_t time_opts[] = { 
+	CFG_STR("format", "%F - %T", CFGF_NONE),
+	CFG_END()
+};
+
 static cfg_opt_t opts[] = {
 	CFG_SEC("general", general_opts, CFGF_NONE),
 	CFG_STR_LIST("items", "{}", CFGF_NONE),
 	CFG_SEC("cpu_usage", cpu_usage_opts, CFGF_NONE),
 	CFG_SEC("cpu_load", cpu_load_opts, CFGF_NONE),
 	CFG_SEC("cpu_temp", cpu_temp_opts, CFGF_NONE),
+	CFG_SEC("time", time_opts, CFGF_NONE),
 	CFG_END()
 };
 
