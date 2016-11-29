@@ -13,6 +13,12 @@ static cfg_opt_t general_opts[] = {
 	CFG_END()
 };
 
+static cfg_opt_t battery_opts[] = {
+	CFG_STR("format", "%status %percentage %remaining %consumption", CFGF_NONE),
+	CFG_STR("path", "/sys/class/power_supply/BAT0/uevent", CFGF_NONE),
+	CFG_END()
+};
+
 static cfg_opt_t cpu_usage_opts[] = {
 	CFG_STR("format", "%usage", CFGF_NONE),
 	CFG_END()
@@ -50,6 +56,7 @@ static cfg_opt_t volume_opts[] = {
 static cfg_opt_t opts[] = {
 	CFG_SEC("general",	general_opts,	CFGF_NONE),
 	CFG_STR_LIST("items",	"{}",		CFGF_NONE),
+	CFG_SEC("battery",	battery_opts,	CFGF_NONE),
 	CFG_SEC("cpu_usage",	cpu_usage_opts,	CFGF_NONE),
 	CFG_SEC("cpu_load",	cpu_load_opts,	CFGF_NONE),
 	CFG_SEC("cpu_temp",	cpu_temp_opts,	CFGF_NONE),
