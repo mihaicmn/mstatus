@@ -37,14 +37,6 @@ void item_clear(struct item_t *item) {
 	text_clear(&item->text);
 }
 
-
 void item_refresh(struct item_t *item) {
 	item->routine(item->config, &item->text);
-}
-
-void item_print(struct item_t *item) {
-	if (item->text.color)
-		printf("(%s)%s ", item->text.color, item->text.content);
-	else
-		printf("%s ", item->text.content);
 }

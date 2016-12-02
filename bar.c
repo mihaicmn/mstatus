@@ -61,10 +61,10 @@ void bar_loop(struct bar_t *bar) {
 		if (pthread_cond_wait(&condition, &mutex) < 0)
 			die("could not wait on condition\n");
 
+		output_begin();
 		for (i = 0; i < bar->count; i++)
-			item_print(&bar->items[i]);
-		printf("\n");
-
+			output_print(&bar->items[i]);
+		output_end();
 
 		if (pthread_mutex_unlock(&mutex) < 0)
 			die("could not unlock mutex\n");
