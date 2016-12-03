@@ -104,5 +104,17 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 	if (get_battery_info(cfg_getstr(config, "path"), &battery) < 0)
 		die("could not get battery info\n");
 
+	if (battery.status == DISCHARGING) {
+		const char *threshold_type = cfg_getstr(config, "threshold_type");
+		if (EQUALS(threshold_type, "percentage"))
+			decide_color(config, battery.percentage, BELOW, &text->color);
+		else if (EQUALS(threshold_type, "minutes"))
+			decide_color(config, battery.remaining / 60, BELOW, &text->color);
+		else
+			die("invalid threshold_type: %s\n", threshold_type);
+	} else {
+		text->color = COLOR_DEFAULT;
+	}
+
 	text_printf(text, "[%d] %.00f %f %.02f", battery.status, battery.percentage, battery.remaining, battery.consumption);
 }

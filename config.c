@@ -31,6 +31,7 @@ static cfg_opt_t battery_opts[] = {
 	CFG_STR("format", "%status %percentage %remaining %consumption", CFGF_NONE),
 	CFG_STR("path", "/sys/class/power_supply/BAT0/uevent", CFGF_NONE),
 	CFG_THRESHOLD(5, 15),
+	CFG_STR("threshold_type", "percentage" , CFGF_NONE), /* percentage|minutes */
 	CFG_INTERVAL,
 	CFG_END()
 };
