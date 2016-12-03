@@ -52,7 +52,10 @@ close_mixer:
 
 void volume_routine(cfg_t *config, struct text_t *text) {
 	struct volume_t volume;
+
 	if (get_volume(cfg_getstr(config, "device"), cfg_getstr(config, "mixer"), cfg_getint(config, "index"), &volume) < 0)
 		die("could not get volume info\n");
-	text_printf(text, "[%d]%.0f", volume.mute, volume.level);
+
+	text->color = (volume.mute == 0) ? COLOR_DEGRADED : COLOR_DEFAULT;
+	text_printf(text, "%.0f", volume.mute, volume.level);
 }
