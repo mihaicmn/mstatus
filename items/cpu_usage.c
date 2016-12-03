@@ -29,7 +29,10 @@ static int get_cpu_usage(int *result) {
 
 void cpu_usage_routine(cfg_t *config, struct text_t *text) {
 	int usage;
+
 	if (get_cpu_usage(&usage) != 0)
 		die("could not read cpu usage\n");
+
+	decide_color(config, usage, ABOVE, &text->color);
 	text_printf(text, "%02d", usage);
 }
