@@ -68,6 +68,7 @@ void bar_init() {
 
 	cfg_t *general = config_get_general();
 	general_interval = cfg_getint(general, "interval");
+	output_init(general);
 
 	for (i = 0; i < item_count; i++) {
 		item = items + i;
@@ -99,7 +100,7 @@ void bar_loop() {
 
 		output_begin();
 		for (i = 0; i < item_count; i++)
-			output_print(items + i);
+			output_print(&items[i].text);
 		output_end();
 
 		if (pthread_mutex_unlock(&mutex) < 0)
@@ -116,6 +117,8 @@ void bar_dismiss() {
 		die("could not destroy mutex\n");
 	if (pthread_cond_destroy(&condition) < 0)
 		die("could not destroy condition\n");
+
+	output_dismiss();
 
 	int i;
 	for (i = 0; i < item_count; i++)

@@ -1,5 +1,6 @@
 #include <confuse.h>
 
+
 void config_load();
 void config_unload();
 

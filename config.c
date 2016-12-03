@@ -6,13 +6,16 @@
 
 #define CHECK_AND_RETURN(path) if (access(path, R_OK) != -1) return path
 #define CFG_INTERVAL CFG_INT("interval", 2, CFGF_NONE)
+#define CFG_COLOR(name, value) CFG_STR(name, value, CFGF_NONE)
 
 
 static cfg_opt_t general_opts[] = {
-	CFG_INT("interval", 5, CFGF_NONE),
 	CFG_STR("separator", "|", CFGF_NONE),
 	CFG_BOOL("colors", cfg_true, CFGF_NONE),
 	CFG_INTERVAL,
+	CFG_COLOR("color_good", "#00FF00"),
+	CFG_COLOR("color_degraded", "#FFFF00"),
+	CFG_COLOR("color_bad", "#FF0000"),
 	CFG_END()
 };
 
