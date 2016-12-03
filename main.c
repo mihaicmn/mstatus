@@ -1,17 +1,12 @@
-#include <stdio.h>
-
 #include "config.h"
 #include "bar.h"
-#include "util.h"
 
 
 int main(void) {
 	config_load();
-
-	struct bar_t *bar = bar_create();
-	bar_loop(bar);
-	bar_destroy(bar);
-
+	bar_init();
+	bar_loop();
+	bar_dismiss();
 	config_unload();
 	return 0;
 }

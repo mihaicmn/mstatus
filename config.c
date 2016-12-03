@@ -5,43 +5,52 @@
 #include "util.h"
 
 #define CHECK_AND_RETURN(path) if (access(path, R_OK) != -1) return path
+#define CFG_INTERVAL CFG_INT("interval", 2, CFGF_NONE)
 
 
 static cfg_opt_t general_opts[] = {
-	CFG_INT("interval", 1, CFGF_NONE),
+	CFG_INT("interval", 5, CFGF_NONE),
+	CFG_STR("separator", "|", CFGF_NONE),
 	CFG_BOOL("colors", cfg_true, CFGF_NONE),
+	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t battery_opts[] = {
 	CFG_STR("format", "%status %percentage %remaining %consumption", CFGF_NONE),
 	CFG_STR("path", "/sys/class/power_supply/BAT0/uevent", CFGF_NONE),
+	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_usage_opts[] = {
 	CFG_STR("format", "%usage", CFGF_NONE),
+	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_load_opts[] = {
 	CFG_STR("format", "%1min %5min %15min", CFGF_NONE),
+	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_temp_opts[] = {
 	CFG_STR("format", "%temp", CFGF_NONE),
 	CFG_STR("path", NULL, CFGF_NONE),
+	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t disk_opts[] = {
 	CFG_STR("format", "%free %used %total", CFGF_NONE),
+	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t time_opts[] = { 
 	CFG_STR("format", "%F - %T", CFGF_NONE),
+	CFG_INTERVAL,
 	CFG_END()
 };
 
@@ -50,6 +59,7 @@ static cfg_opt_t volume_opts[] = {
 	CFG_STR("device", "default", CFGF_NONE),
 	CFG_STR("mixer", "Master", CFGF_NONE),
 	CFG_INT("index", 0, CFGF_NONE),
+	CFG_INTERVAL,
 	CFG_END()
 };
 
@@ -85,6 +95,11 @@ void config_load() {
 void config_unload() {
 	cfg_free(config);
 	config = NULL;
+}
+
+
+cfg_t *config_get_general() {
+	return cfg_getsec(config, "general");
 }
 
 const int config_get_item_count() {

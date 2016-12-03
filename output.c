@@ -10,10 +10,6 @@ void output_begin() {
 	use_separator = false;
 }
 
-void output_end() {
-	printf("\n");
-}
-
 void output_print(const struct item_t *item) {
 	if (use_separator)
 		printf(" | ");
@@ -25,3 +21,8 @@ void output_print(const struct item_t *item) {
 
 	use_separator = true;
 }
+
+void output_end() {
+	printf("\n");
+}
+

@@ -30,6 +30,7 @@ static routine_t get_routine(cfg_t *config) {
 void item_init(struct item_t *item, cfg_t *config) {
 	item->config = config;
 	item->routine = get_routine(config);
+	item->interval = cfg_getint(config, "interval");
 	text_init(&item->text, TEXT_LENGTH);
 }
 
