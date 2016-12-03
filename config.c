@@ -5,8 +5,16 @@
 #include "util.h"
 
 #define CHECK_AND_RETURN(path) if (access(path, R_OK) != -1) return path
-#define CFG_INTERVAL CFG_INT("interval", 2, CFGF_NONE)
-#define CFG_COLOR(name, value) CFG_STR(name, value, CFGF_NONE)
+
+#define CFG_INTERVAL 						\
+	CFG_INT("interval", 2, CFGF_NONE)
+
+#define CFG_COLOR(name, value) 					\
+	CFG_STR(name, value, CFGF_NONE)
+
+#define CFG_THRESHOLD(bad, degraded)				\
+	CFG_FLOAT("threshold_bad", bad, CFGF_NONE),		\
+	CFG_FLOAT("threshold_degraded", degraded, CFGF_NONE)
 
 
 static cfg_opt_t general_opts[] = {
@@ -22,18 +30,21 @@ static cfg_opt_t general_opts[] = {
 static cfg_opt_t battery_opts[] = {
 	CFG_STR("format", "%status %percentage %remaining %consumption", CFGF_NONE),
 	CFG_STR("path", "/sys/class/power_supply/BAT0/uevent", CFGF_NONE),
+	CFG_THRESHOLD(5, 15),
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_usage_opts[] = {
 	CFG_STR("format", "%usage", CFGF_NONE),
+	CFG_THRESHOLD(95, 90),
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_load_opts[] = {
 	CFG_STR("format", "%1min %5min %15min", CFGF_NONE),
+	CFG_THRESHOLD(5, 3),
 	CFG_INTERVAL,
 	CFG_END()
 };
@@ -41,12 +52,14 @@ static cfg_opt_t cpu_load_opts[] = {
 static cfg_opt_t cpu_temp_opts[] = {
 	CFG_STR("format", "%temp", CFGF_NONE),
 	CFG_STR("path", NULL, CFGF_NONE),
+	CFG_THRESHOLD(75, 60),
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t disk_opts[] = {
 	CFG_STR("format", "%free %used %total", CFGF_NONE),
+	CFG_THRESHOLD(5, 10),
 	CFG_INTERVAL,
 	CFG_END()
 };

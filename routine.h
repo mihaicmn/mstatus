@@ -11,5 +11,11 @@ void disk_routine(cfg_t *config, struct text_t *text);
 void time_routine(cfg_t *config, struct text_t *text);
 void volume_routine(cfg_t *config, struct text_t *text);
 
-const char *routine_select_format(cfg_t *config, const double value);
 
+/* common helpers */
+enum comparison_t {
+	ABOVE,
+	BELOW
+};
+
+void decide_color(cfg_t *config, const double value, enum comparison_t comp, enum color_t *color); 
