@@ -17,5 +17,6 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text) {
 	if (get_cpu_temp(path, &temp) < 0)
 		die("could not get cpu temp\n");
 	
+	decide_color(config, temp, ABOVE, &text->color);
 	text_printf(text, "%02d", temp);
 }
