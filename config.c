@@ -60,6 +60,9 @@ static cfg_opt_t cpu_temp_opts[] = {
 static cfg_opt_t disk_opts[] = {
 	CFG_STR("format", "%free %used %total", CFGF_NONE),
 	CFG_THRESHOLD(5, 10),
+	CFG_STR("threshold_type", "free" , CFGF_NONE), /* free|avail|used */
+	CFG_STR("threshold_unit", "%", CFGF_NONE), /* k|M|G|T|% */
+	CFG_STR("measurement_system", "jedec", CFGF_NONE), /* metric|iec|jedec  */
 	CFG_INTERVAL,
 	CFG_END()
 };
