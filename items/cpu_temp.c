@@ -21,7 +21,6 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text) {
 
 	FORMAT_WALK(cfg_getstr(config, "format")) {
 		FORMAT_CONSUME;
-		if (FORMAT_MATCHES("temp", 4))
-			FORMAT_REPLACE(4, "%02d", temp);
+		FORMAT_RESOLVE("temp", 4, "%02d", temp);
 	}
 }

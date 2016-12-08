@@ -37,7 +37,6 @@ void cpu_usage_routine(cfg_t *config, struct text_t *text) {
 
 	FORMAT_WALK(cfg_getstr(config, "format")) {
 		FORMAT_CONSUME;
-		if (FORMAT_MATCHES("usage", 5))
-			FORMAT_REPLACE(5, "%02d", usage);
+		FORMAT_RESOLVE("usage", 5, "%02d", usage);
 	}
 }

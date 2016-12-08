@@ -60,7 +60,6 @@ void volume_routine(cfg_t *config, struct text_t *text) {
 
 	FORMAT_WALK(cfg_getstr(config, "format")) {
 		FORMAT_CONSUME;
-		if (FORMAT_MATCHES("volume", 6))
-			FORMAT_REPLACE(6, "%.0f", volume.level);
+		FORMAT_RESOLVE("volume", 6, "%.0f", volume.level);
 	}
 }
