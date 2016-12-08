@@ -116,5 +116,17 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 		text->color = COLOR_DEFAULT;
 	}
 
-	text_printf(text, "[%d] %.00f %f %.02f", battery.status, battery.percentage, battery.remaining, battery.consumption);
+        FORMAT_WALK(cfg_getstr(config, "format")) {
+                
+                FORMAT_CONSUME;
+                
+                if (FORMAT_MATCHES("status", 6))
+                        FORMAT_REPLACE(6, "%d", battery.status);
+                else if (FORMAT_MATCHES("percentage", 10))
+                        FORMAT_REPLACE(10, "%.00f", battery.percentage);
+                else if (FORMAT_MATCHES("remaining", 9))
+                        FORMAT_REPLACE(9, "%f", battery.remaining);
+                else if (FORMAT_MATCHES("consumption", 11))
+                        FORMAT_REPLACE(11, "%0.02fW", battery.consumption);
+        }
 }
