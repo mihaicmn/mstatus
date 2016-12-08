@@ -57,5 +57,10 @@ void volume_routine(cfg_t *config, struct text_t *text) {
 		die("could not get volume info\n");
 
 	text->color = (volume.mute == 0) ? COLOR_DEGRADED : COLOR_DEFAULT;
-	text_printf(text, "%.0f", volume.mute, volume.level);
+
+	FORMAT_WALK(cfg_getstr(config, "format")) {
+		FORMAT_CONSUME;
+		if (FORMAT_MATCHES("volume", 6))
+			FORMAT_REPLACE(6, "%.0f", volume.level);
+	}
 }
