@@ -1,7 +1,6 @@
 #include <sys/statvfs.h>
 
 #include "routine.h"
-#include "strings.h"
 
 #define MAX_UNITS 4
 
@@ -119,9 +118,17 @@ void disk_routine(cfg_t *config, struct text_t *text) {
 	convert_bytes_auto(system, disk.used, &used);
 	convert_bytes_auto(system, disk.total, &total);
 
-	text_printf(text, "%.1f%s %.1f%s %.1f%s %1.f%s",
-		free.value, free.unit,
-		avail.value, avail.unit,
-		used.value, used.unit,
-		total.value, total.unit);
+	FORMAT_WALK(cfg_getstr(config, "format")) {
+
+		FORMAT_CONSUME;
+
+		if (FORMAT_MATCHES("free", 4))
+			FORMAT_REPLACE(4, "%.1f%s", free.value, free.unit);
+		else if (FORMAT_MATCHES("avail", 5))
+			FORMAT_REPLACE(5, "%.1f%s", avail.value, avail.unit);
+		else if (FORMAT_MATCHES("used", 4))
+			FORMAT_REPLACE(4, "%.1f%s", used.value, used.unit);
+		else if (FORMAT_MATCHES("total", 5))
+			FORMAT_REPLACE(5, "%.1f%s", total.value, total.unit);
+	}
 }
