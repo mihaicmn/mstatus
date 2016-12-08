@@ -35,9 +35,11 @@ void item_init(struct item_t *item, cfg_t *config) {
 }
 
 void item_clear(struct item_t *item) {
-	text_clear(&item->text);
+	text_dismiss(&item->text);
 }
 
 void item_refresh(struct item_t *item) {
+	text_reset(&item->text);
 	item->routine(item->config, &item->text);
+	text_putnull(&item->text);
 }

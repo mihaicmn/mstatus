@@ -12,13 +12,17 @@ enum color_t {
 
 struct text_t {
 	char *content;
+	char *cursor;
 	size_t capacity;
 	enum color_t color;
 };
 
 void text_init(struct text_t *text, size_t capacity);
-void text_clear(struct text_t *text);
+void text_dismiss(struct text_t *text);
 
 void text_printf(struct text_t *text, const char *format, ...);
+void text_putc(struct text_t *text, const char c);
+void text_putnull(struct text_t *text);
+void text_reset(struct text_t *text);
 
 #endif
