@@ -18,5 +18,10 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text) {
 		die("could not get cpu temp\n");
 	
 	decide_color(config, temp, ABOVE, &text->color);
-	text_printf(text, "%02d", temp);
+
+	FORMAT_WALK(cfg_getstr(config, "format")) {
+		FORMAT_CONSUME;
+		if (FORMAT_MATCHES("temp", 4))
+			FORMAT_REPLACE(4, "%02d", temp);
+	}
 }

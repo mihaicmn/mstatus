@@ -4,7 +4,6 @@
 
 
 #include "routine.h"
-#include "strings.h"
 
 enum status_t {
 	UNKNOWN,

@@ -1,5 +1,6 @@
 #include "config.h"
 #include "text.h"
+#include "strings.h"
 
 typedef void (*routine_t)(cfg_t *config, struct text_t *text);
 

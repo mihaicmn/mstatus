@@ -1,7 +1,6 @@
 #include <stdlib.h>
 
 #include "routine.h"
-#include "strings.h"
 
 void cpu_load_routine(cfg_t *config, struct text_t *text) {
 	double loadavg[3];
