@@ -4,13 +4,14 @@
 
 void cpu_load_routine(cfg_t *config, struct text_t *text) {
 	double loadavg[3];
+	const char *format;
 
 	if (getloadavg(loadavg, 3) != 3)
 		die("could not get loadavg\n");
 
-	decide_color(config, loadavg[0], ABOVE, &text->color);
+	decide_format(config, loadavg[0], ABOVE, &format, &text->color);
 
-	FORMAT_WALK(cfg_getstr(config, "format")) {
+	FORMAT_WALK(format) {
 		FORMAT_CONSUME;
 		FORMAT_RESOLVE("1min", 4, "%.2f", loadavg[0]);
 		FORMAT_RESOLVE("5min", 4, "%.2f", loadavg[1]);

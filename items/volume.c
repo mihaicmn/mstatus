@@ -52,11 +52,18 @@ close_mixer:
 
 void volume_routine(cfg_t *config, struct text_t *text) {
 	struct volume_t volume;
+	char *format;
 
 	if (get_volume(cfg_getstr(config, "device"), cfg_getstr(config, "mixer"), cfg_getint(config, "index"), &volume) < 0)
 		die("could not get volume info\n");
 
-	text->color = (volume.mute == 0) ? COLOR_DEGRADED : COLOR_DEFAULT;
+	if (volume.mute == 0) {
+		format = FORMAT_LOAD("format_muted");
+		text->color = COLOR_DEGRADED;
+	} else {
+		format = FORMAT_LOAD_DEFAULT;
+		text->color = COLOR_DEFAULT;
+	}
 
 	FORMAT_WALK(cfg_getstr(config, "format")) {
 		FORMAT_CONSUME;

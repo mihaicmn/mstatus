@@ -15,7 +15,10 @@ void volume_routine(cfg_t *config, struct text_t *text);
 
 /* common helpers */
 
-#define FORMAT_WALK(format) char *c; for (c = format; *c != '\0'; c++)
+#define FORMAT_LOAD(key) cfg_getstr(config, key)
+#define FORMAT_LOAD_DEFAULT cfg_getstr(config, "format")
+
+#define FORMAT_WALK(format) const char *c; for (c = format; *c != '\0'; c++)
 #define FORMAT_CONSUME					\
 	if (*c != '%') {				\
 		text_putc(text, *c);			\
@@ -33,4 +36,4 @@ enum comparison_t {
 	BELOW
 };
 
-void decide_color(cfg_t *config, const double value, enum comparison_t comp, enum color_t *color); 
+void decide_format(cfg_t *config, const double value, enum comparison_t comp, const char **format, enum color_t *color);

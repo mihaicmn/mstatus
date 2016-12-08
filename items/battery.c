@@ -99,6 +99,7 @@ close_file:
 
 void battery_routine(cfg_t *config, struct text_t *text) {
 	struct battery_t battery;
+	const char *format;
 
 	if (get_battery_info(cfg_getstr(config, "path"), &battery) < 0)
 		die("could not get battery info\n");
@@ -106,16 +107,17 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 	if (battery.status == DISCHARGING) {
 		const char *threshold_type = cfg_getstr(config, "threshold_type");
 		if (EQUALS(threshold_type, "percentage"))
-			decide_color(config, battery.percentage, BELOW, &text->color);
+			decide_format(config, battery.percentage, BELOW, &format, &text->color);
 		else if (EQUALS(threshold_type, "minutes"))
-			decide_color(config, battery.remaining / 60, BELOW, &text->color);
+			decide_format(config, battery.remaining / 60, BELOW, &format, &text->color);
 		else
 			die("invalid threshold_type: %s\n", threshold_type);
 	} else {
 		text->color = COLOR_DEFAULT;
+		format = FORMAT_LOAD_DEFAULT;
 	}
 
-        FORMAT_WALK(cfg_getstr(config, "format")) {
+        FORMAT_WALK(format) {
                 FORMAT_CONSUME;
                 FORMAT_RESOLVE("status", 6, "%d", battery.status);
                 FORMAT_RESOLVE("percentage", 10, "%.00f", battery.percentage);

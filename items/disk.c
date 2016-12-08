@@ -110,15 +110,15 @@ void disk_routine(cfg_t *config, struct text_t *text) {
 	else
 		die("invalid threshold_unit: %s\n", threshold_unit);
 
-	decide_color(config, level, comparison, &text->color);
-
+	const char *format;
+	decide_format(config, level, comparison, &format, &text->color);
 
 	convert_bytes_auto(system, disk.free, &free);
 	convert_bytes_auto(system, disk.avail, &avail);
 	convert_bytes_auto(system, disk.used, &used);
 	convert_bytes_auto(system, disk.total, &total);
 
-	FORMAT_WALK(cfg_getstr(config, "format")) {
+	FORMAT_WALK(format) {
 		FORMAT_CONSUME;
 		FORMAT_RESOLVE("free", 4, "%.1f%s", free.value, free.unit);
 		FORMAT_RESOLVE("avail", 5, "%.1f%s", avail.value, avail.unit);

@@ -33,9 +33,10 @@ void cpu_usage_routine(cfg_t *config, struct text_t *text) {
 	if (get_cpu_usage(&usage) != 0)
 		die("could not read cpu usage\n");
 
-	decide_color(config, usage, ABOVE, &text->color);
+	const char *format;
+	decide_format(config, usage, ABOVE, &format, &text->color);
 
-	FORMAT_WALK(cfg_getstr(config, "format")) {
+	FORMAT_WALK(format) {
 		FORMAT_CONSUME;
 		FORMAT_RESOLVE("usage", 5, "%02d", usage);
 	}

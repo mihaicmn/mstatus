@@ -12,9 +12,12 @@
 #define CFG_COLOR(name, value) 					\
 	CFG_STR(name, value, CFGF_NONE)
 
-#define CFG_THRESHOLD(bad, degraded)				\
+#define CFG_THRESHOLD(bad, degraded, common_format)		\
 	CFG_FLOAT("threshold_bad", bad, CFGF_NONE),		\
-	CFG_FLOAT("threshold_degraded", degraded, CFGF_NONE)
+	CFG_FLOAT("threshold_degraded", degraded, CFGF_NONE),	\
+	CFG_STR("format", common_format, CFGF_NONE),		\
+	CFG_STR("format_bad", common_format, CFGF_NONE),	\
+	CFG_STR("format_degraded", common_format, CFGF_NONE)
 
 
 static cfg_opt_t general_opts[] = {
@@ -28,39 +31,34 @@ static cfg_opt_t general_opts[] = {
 };
 
 static cfg_opt_t battery_opts[] = {
-	CFG_STR("format", "%status %percentage %remaining %consumption", CFGF_NONE),
 	CFG_STR("path", "/sys/class/power_supply/BAT0/uevent", CFGF_NONE),
-	CFG_THRESHOLD(5, 15),
+	CFG_THRESHOLD(5, 15, "status %percentage %remaining %consumption"),
 	CFG_STR("threshold_type", "percentage" , CFGF_NONE), /* percentage|minutes */
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_usage_opts[] = {
-	CFG_STR("format", "%usage", CFGF_NONE),
-	CFG_THRESHOLD(95, 90),
+	CFG_THRESHOLD(95, 90, "%usage"),
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_load_opts[] = {
-	CFG_STR("format", "%1min %5min %15min", CFGF_NONE),
-	CFG_THRESHOLD(5, 3),
+	CFG_THRESHOLD(5, 3, "%1min %5min %15min"),
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_temp_opts[] = {
-	CFG_STR("format", "%temp", CFGF_NONE),
 	CFG_STR("path", NULL, CFGF_NONE),
-	CFG_THRESHOLD(75, 60),
+	CFG_THRESHOLD(75, 60, "%temp"),
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t disk_opts[] = {
-	CFG_STR("format", "%free %used %total", CFGF_NONE),
-	CFG_THRESHOLD(5, 10),
+	CFG_THRESHOLD(5, 10, "%free %used %total"),
 	CFG_STR("threshold_type", "free" , CFGF_NONE), /* free|avail|used */
 	CFG_STR("threshold_unit", "%", CFGF_NONE), /* k|M|G|T|% */
 	CFG_STR("measurement_system", "jedec", CFGF_NONE), /* metric|iec|jedec  */
@@ -76,6 +74,7 @@ static cfg_opt_t time_opts[] = {
 
 static cfg_opt_t volume_opts[] = {
 	CFG_STR("format", "%volume", CFGF_NONE),
+	CFG_STR("format_muted", "%volume", CFGF_NONE),
 	CFG_STR("device", "default", CFGF_NONE),
 	CFG_STR("mixer", "Master", CFGF_NONE),
 	CFG_INT("index", 0, CFGF_NONE),
