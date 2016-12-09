@@ -17,3 +17,9 @@ typedef void (*target_end_t)();
 
 void terminal_init();
 void terminal_print(const struct text_t *t);
+
+void i3bar_init();
+void i3bar_dismiss();
+void i3bar_begin();
+void i3bar_end();
+void i3bar_print(const struct text_t *t);

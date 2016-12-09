@@ -24,6 +24,12 @@ void output_init(cfg_t *config) {
 	if (EQUALS(target, "TERMINAL")) {
 		target_init = &terminal_init;
 		target_print = &terminal_print;
+	} else if (EQUALS(target, "I3BAR")) {
+		target_init = &i3bar_init;
+		target_dismiss = &i3bar_dismiss;
+		target_begin = &i3bar_begin;
+		target_end = &i3bar_end;
+		target_print = &i3bar_print;
 	} else {
 		die("invalid target: %s\n", target);
 	}

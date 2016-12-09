@@ -30,7 +30,7 @@ static void convert_color(const char *in_color, char *out_color) {
 	snprintf(out_color, sizeof(out_color), "\033[3%d;1m", (r << 2) | (g << 1) | b);
 }
 
-static const char *select_color(enum color_t color) {
+static inline const char *select_color(enum color_t color) {
 	switch (color) {
 	case COLOR_GOOD:
 		return term_color_good;
