@@ -9,12 +9,12 @@
 #define CFG_COLOR(name, value) 					\
 	CFG_STR(name, value, CFGF_NONE)
 
-#define CFG_THRESHOLD(bad, degraded, common_format)		\
+#define CFG_THRESHOLD(bad, degraded, cformat)			\
 	CFG_FLOAT("threshold_bad", bad, CFGF_NONE),		\
 	CFG_FLOAT("threshold_degraded", degraded, CFGF_NONE),	\
-	CFG_STR("format", common_format, CFGF_NONE),		\
-	CFG_STR("format_bad", common_format, CFGF_NONE),	\
-	CFG_STR("format_degraded", common_format, CFGF_NONE)
+	CFG_STR("format", cformat, CFGF_NONE),			\
+	CFG_STR("format_bad", NULL, CFGF_NONE),			\
+	CFG_STR("format_degraded", NULL, CFGF_NONE)
 
 
 static cfg_opt_t general_opts[] = {

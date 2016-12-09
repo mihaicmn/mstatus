@@ -119,10 +119,11 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 	}
 
         FORMAT_WALK(format) {
-                FORMAT_CONSUME;
+                FORMAT_PRE_RESOLVE;
                 FORMAT_RESOLVE("status", 6, "%d", battery.status);
                 FORMAT_RESOLVE("percentage", 10, "%.00f", battery.percentage);
                 FORMAT_RESOLVE("remaining", 9, "%f", battery.remaining);
                 FORMAT_RESOLVE("consumption", 11, "%0.02fW", battery.consumption);
+		FORMAT_POST_RESOLVE;
         }
 }

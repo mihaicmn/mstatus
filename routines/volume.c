@@ -66,7 +66,8 @@ void volume_routine(cfg_t *config, struct text_t *text) {
 	}
 
 	FORMAT_WALK(format) {
-		FORMAT_CONSUME;
+		FORMAT_PRE_RESOLVE;
 		FORMAT_RESOLVE("volume", 6, "%.0f", volume.level);
+		FORMAT_POST_RESOLVE;
 	}
 }

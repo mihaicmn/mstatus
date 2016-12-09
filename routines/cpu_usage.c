@@ -37,7 +37,8 @@ void cpu_usage_routine(cfg_t *config, struct text_t *text) {
 	decide(config, usage, ABOVE, &format, &text->color);
 
 	FORMAT_WALK(format) {
-		FORMAT_CONSUME;
+		FORMAT_PRE_RESOLVE;
 		FORMAT_RESOLVE("usage", 5, "%02d", usage);
+		FORMAT_POST_RESOLVE;
 	}
 }
