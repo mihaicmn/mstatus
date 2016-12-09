@@ -4,6 +4,7 @@
 
 
 #include "routine.h"
+#include "format.h"
 
 enum status_t {
 	UNKNOWN,
@@ -107,9 +108,9 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 	if (battery.status == DISCHARGING) {
 		const char *threshold_type = cfg_getstr(config, "threshold_type");
 		if (EQUALS(threshold_type, "percentage"))
-			decide_format(config, battery.percentage, BELOW, &format, &text->color);
+			decide(config, battery.percentage, BELOW, &format, &text->color);
 		else if (EQUALS(threshold_type, "minutes"))
-			decide_format(config, battery.remaining / 60, BELOW, &format, &text->color);
+			decide(config, battery.remaining / 60, BELOW, &format, &text->color);
 		else
 			die("invalid threshold_type: %s\n", threshold_type);
 	} else {

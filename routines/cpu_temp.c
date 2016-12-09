@@ -16,9 +16,9 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text) {
 	int temp;
 	if (get_cpu_temp(path, &temp) < 0)
 		die("could not get cpu temp\n");
-	
+
 	const char *format;
-	decide_format(config, temp, ABOVE, &format, &text->color);
+	decide(config, temp, ABOVE, &format, &text->color);
 
 	FORMAT_WALK(format) {
 		FORMAT_CONSUME;

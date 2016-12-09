@@ -111,7 +111,7 @@ void disk_routine(cfg_t *config, struct text_t *text) {
 		die("invalid threshold_unit: %s\n", threshold_unit);
 
 	const char *format;
-	decide_format(config, level, comparison, &format, &text->color);
+	decide(config, level, comparison, &format, &text->color);
 
 	convert_bytes_auto(system, disk.free, &free);
 	convert_bytes_auto(system, disk.avail, &avail);

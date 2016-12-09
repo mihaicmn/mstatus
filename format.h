@@ -1,3 +1,4 @@
+#include "strings.h"
 
 #define FORMAT_LOAD(key) cfg_getstr(config, key)
 #define FORMAT_LOAD_DEFAULT cfg_getstr(config, "format")
@@ -14,10 +15,3 @@
 		c += len;				\
 		continue;				\
 	}
-
-enum comparison_t {
-	ABOVE,
-	BELOW
-};
-
-void decide_format(cfg_t *config, const double value, enum comparison_t comp, const char **format, enum color_t *color); 

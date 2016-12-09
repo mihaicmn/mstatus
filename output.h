@@ -1,5 +1,4 @@
-#include <confuse.h>
-
+#include "config.h"
 #include "text.h"
 
 void output_init(cfg_t *config);

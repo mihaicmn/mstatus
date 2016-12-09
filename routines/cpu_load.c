@@ -9,7 +9,7 @@ void cpu_load_routine(cfg_t *config, struct text_t *text) {
 	if (getloadavg(loadavg, 3) != 3)
 		die("could not get loadavg\n");
 
-	decide_format(config, loadavg[0], ABOVE, &format, &text->color);
+	decide(config, loadavg[0], ABOVE, &format, &text->color);
 
 	FORMAT_WALK(format) {
 		FORMAT_CONSUME;

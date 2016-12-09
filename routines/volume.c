@@ -65,7 +65,7 @@ void volume_routine(cfg_t *config, struct text_t *text) {
 		text->color = COLOR_DEFAULT;
 	}
 
-	FORMAT_WALK(cfg_getstr(config, "format")) {
+	FORMAT_WALK(format) {
 		FORMAT_CONSUME;
 		FORMAT_RESOLVE("volume", 6, "%.0f", volume.level);
 	}

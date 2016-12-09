@@ -1,6 +1,5 @@
 #include "routine.h"
 
-
 struct item_t {
 	int interval;
 	routine_t routine;
