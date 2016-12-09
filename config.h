@@ -1,7 +1,7 @@
 #include <confuse.h>
 
 
-void config_load();
+void config_load(const char *path);
 void config_unload();
 
 cfg_t *config_get_general();

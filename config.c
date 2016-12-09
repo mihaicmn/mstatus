@@ -1,10 +1,7 @@
 #include <string.h>
-#include <unistd.h>
 
 #include "config.h"
 #include "util.h"
-
-#define CHECK_AND_RETURN(path) if (access(path, R_OK) != -1) return path
 
 #define CFG_INTERVAL 						\
 	CFG_INT("interval", 2, CFGF_NONE)
@@ -98,11 +95,8 @@ static cfg_opt_t opts[] = {
 static cfg_t *config;
 
 
-void config_load() {
+void config_load(const char *path) {
 	config = cfg_init(opts, CFGF_NONE);
-
-	char *path = "mstatus.conf";//FIXME 
-	
 	switch (cfg_parse(config, path)) {
 	case CFG_SUCCESS:
 		break;
