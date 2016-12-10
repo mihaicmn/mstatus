@@ -18,7 +18,7 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text) {
 		die("could not get cpu temp\n");
 
 	const char *format;
-	decide(config, temp, ABOVE, &format, &text->color);
+	choose_fmtcol_default(config, temp, ABOVE, &format, &text->color);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

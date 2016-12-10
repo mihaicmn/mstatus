@@ -6,6 +6,14 @@
 #include "routine.h"
 #include "format.h"
 
+#define CHOOSE_BATT_FORMAT(key, scolor)		\
+	format = FORMAT_LOAD(key);		\
+	if (format == NULL)			\
+		format = FORMAT_LOAD_DEFAULT;	\
+	text->color = scolor;
+
+#define BUFF_SIZE 1024
+
 enum status_t {
 	UNKNOWN,
 	FULL,
@@ -21,7 +29,6 @@ struct battery_t {
 };
 
 static int get_battery_info(const char *path, struct battery_t *battery) {
-#define BUFF_SIZE 1024
 	int fd, count;
 	char buff[BUFF_SIZE], *cursor;
 	int charge_design, charge_real, charge_now, rate, voltage;
@@ -101,21 +108,30 @@ close_file:
 void battery_routine(cfg_t *config, struct text_t *text) {
 	struct battery_t battery;
 	const char *format;
+	const char *threshold_type;
 
 	if (get_battery_info(cfg_getstr(config, "path"), &battery) < 0)
 		die("could not get battery info\n");
 
-	if (battery.status == DISCHARGING) {
-		const char *threshold_type = cfg_getstr(config, "threshold_type");
+	switch (battery.status) {
+	case FULL:
+		CHOOSE_BATT_FORMAT("format_full", COLOR_GOOD);
+		break;
+	case CHARGING:
+		CHOOSE_BATT_FORMAT("format_charging",  COLOR_DEFAULT);
+		break;
+	case DISCHARGING:
+		threshold_type = cfg_getstr(config, "threshold_type");
 		if (EQUALS(threshold_type, "percentage"))
-			decide(config, battery.percentage, BELOW, &format, &text->color);
+			choose_fmtcol(config, battery.percentage, BELOW, "format_discharging", &format, &text->color);
 		else if (EQUALS(threshold_type, "minutes"))
-			decide(config, battery.remaining / 60, BELOW, &format, &text->color);
+			choose_fmtcol(config, battery.remaining / 60, BELOW, "format_discharging", &format, &text->color);
 		else
 			die("invalid threshold_type: %s\n", threshold_type);
-	} else {
-		text->color = COLOR_DEFAULT;
-		format = FORMAT_LOAD_DEFAULT;
+		break;
+	case UNKNOWN:
+		CHOOSE_BATT_FORMAT("format_unknown", COLOR_DEFAULT);
+		break;
 	}
 
         FORMAT_WALK(format) {

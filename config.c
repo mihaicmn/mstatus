@@ -30,6 +30,10 @@ static cfg_opt_t general_opts[] = {
 
 static cfg_opt_t battery_opts[] = {
 	CFG_STR("path", "/sys/class/power_supply/BAT0/uevent", CFGF_NONE),
+	CFG_STR("format_charging", NULL, CFGF_NONE),
+	CFG_STR("format_discharging", NULL, CFGF_NONE),
+	CFG_STR("format_full", NULL, CFGF_NONE),
+	CFG_STR("format_unknown", NULL, CFGF_NONE),
 	CFG_THRESHOLD(5, 15, "status %percentage %remaining %consumption"),
 	CFG_STR("threshold_type", "percentage" , CFGF_NONE), /* percentage|minutes */
 	CFG_INTERVAL,
