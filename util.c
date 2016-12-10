@@ -30,7 +30,7 @@ void sfree(void *ptr) {
 int file_expand(const char *glob, char *path) {
 	wordexp_t p;
 	int i, result = -1;
-s
+
 	wordexp(glob, &p, 0);
 	for (i = 0; i < p.we_wordc; i++) {
 		if (access(p.we_wordv[i], R_OK) != -1) {
