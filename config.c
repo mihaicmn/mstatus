@@ -4,9 +4,9 @@
 #include "util.h"
 
 #define CFG_INTERVAL 						\
-	CFG_INT("interval", 2, CFGF_NONE)
+	CFG_INT("interval", 10, CFGF_NONE)
 
-#define CFG_COLOR(name, value) 					\
+#define CFG_COLOR(name, value)					\
 	CFG_STR(name, value, CFGF_NONE)
 
 #define CFG_THRESHOLD(bad, degraded, cformat)			\
@@ -16,6 +16,9 @@
 	CFG_STR("format_bad", NULL, CFGF_NONE),			\
 	CFG_STR("format_degraded", NULL, CFGF_NONE)
 
+#define CFG_UPDOWN(cformat)					\
+	CFG_STR("format", cformat, CFGF_NONE),			\
+	CFG_STR("format_bad", NULL, CFGF_NONE)
 
 static cfg_opt_t general_opts[] = {
 	CFG_STR("separator", "|", CFGF_NONE),
@@ -68,6 +71,13 @@ static cfg_opt_t disk_opts[] = {
 	CFG_END()
 };
 
+static cfg_opt_t process_opts[] = {
+	CFG_STR("pidfile", NULL, CFGF_NONE),
+	CFG_UPDOWN("%title: %good"),
+	CFG_INTERVAL,
+	CFG_END()
+};
+
 static cfg_opt_t time_opts[] = { 
 	CFG_STR("format", "%F - %T", CFGF_NONE),
 	CFG_INTERVAL,
@@ -92,6 +102,7 @@ static cfg_opt_t opts[] = {
 	CFG_SEC("cpu_load",	cpu_load_opts,	CFGF_NONE),
 	CFG_SEC("cpu_temp",	cpu_temp_opts,	CFGF_NONE),
 	CFG_SEC("disk",		disk_opts,	CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("process",	process_opts,	CFGF_MULTI | CFGF_TITLE),
 	CFG_SEC("time",		time_opts,	CFGF_NONE),
 	CFG_SEC("volume",	volume_opts,	CFGF_MULTI | CFGF_TITLE),
 	CFG_END()
@@ -146,6 +157,9 @@ cfg_t *config_get_item(const int index) {
 		section = cfg_getsec(config, selector);
 	
 	sfree(name);
+
+	if (section == NULL)
+		die("section: %s not found\n", name);
 
 	return section;
 }

@@ -1,34 +1,16 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <wordexp.h>
 
-#include "config.h"
 #include "bar.h"
+#include "config.h"
+#include "util.h"
 
 
 static void select_path(const char **paths, const int len, char *result) {
-	wordexp_t p;
-	const char *path;
-	int i, j;
-
+	int i;
 	for (i = 0; i < len; i++) {
-		path = paths[i];
-
-		if (path == NULL)
-			continue;
-
-		wordexp(path, &p, 0);
-
-		for (j = 0; j < p.we_wordc; j++) {
-			if (access(p.we_wordv[j], R_OK) == -1)
-				continue;
-
-			strcpy(result, p.we_wordv[j]);
-			i = len; //break the second outer loop
+		if (paths[i] != NULL && file_expand(paths[i], result) == 0)
 			break;
-		}
-
-		wordfree(&p);
 	}
 }
 

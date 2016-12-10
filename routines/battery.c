@@ -4,13 +4,13 @@
 
 
 #include "routine.h"
-#include "format.h"
 
 #define CHOOSE_BATT_FORMAT(key, scolor)		\
-	format = FORMAT_LOAD(key);		\
-	if (format == NULL)			\
-		format = FORMAT_LOAD_DEFAULT;	\
+	CHOOSE_FORMAT(key);			\
 	text->color = scolor;
+
+#define CHOOSE_BATT_FORMAT_DISCHARGING(value)	\
+	choose_fmtcol_fallback_threshold(config, value, BELOW, "format_discharging", &format, &text->color)
 
 #define BUFF_SIZE 1024
 
@@ -123,9 +123,9 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 	case DISCHARGING:
 		threshold_type = cfg_getstr(config, "threshold_type");
 		if (EQUALS(threshold_type, "percentage"))
-			choose_fmtcol(config, battery.percentage, BELOW, "format_discharging", &format, &text->color);
+			CHOOSE_BATT_FORMAT_DISCHARGING(battery.percentage);
 		else if (EQUALS(threshold_type, "minutes"))
-			choose_fmtcol(config, battery.remaining / 60, BELOW, "format_discharging", &format, &text->color);
+			CHOOSE_BATT_FORMAT_DISCHARGING(battery.remaining / 60);
 		else
 			die("invalid threshold_type: %s\n", threshold_type);
 		break;

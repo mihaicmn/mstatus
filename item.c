@@ -19,6 +19,8 @@ static routine_t get_routine(cfg_t *config) {
 		return &cpu_temp_routine;
 	else if (STARTS_WITH("disk", name, 4))
 		return &disk_routine;
+	else if (STARTS_WITH("process", name, 7))
+		return &process_routine;
 	else if (STARTS_WITH("time", name, 4))
 		return &time_routine;
 	else if (STARTS_WITH("volume", name, 6))

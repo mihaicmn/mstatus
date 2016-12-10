@@ -9,7 +9,7 @@ void cpu_load_routine(cfg_t *config, struct text_t *text) {
 	if (getloadavg(loadavg, 3) != 3)
 		die("could not get loadavg\n");
 
-	choose_fmtcol_default(config, loadavg[0], ABOVE, &format, &text->color);
+	CHOOSE_FMTCOL_BYTHRESHOLD(loadavg[0], ABOVE);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
