@@ -24,7 +24,7 @@ static cfg_opt_t general_opts[] = {
 	CFG_STR("separator", "|", CFGF_NONE),
 	CFG_BOOL("colors", cfg_true, CFGF_NONE),
 	CFG_STR("target", "TERMINAL", CFGF_NONE),
-	CFG_STR("interval", 2, CFGF_NONE),
+	CFG_INT("interval", 2, CFGF_NONE),
 	CFG_COLOR("color_good", "#00FF00"),
 	CFG_COLOR("color_degraded", "#FFFF00"),
 	CFG_COLOR("color_bad", "#FF0000"),
