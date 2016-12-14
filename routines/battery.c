@@ -87,10 +87,10 @@ static int get_battery_info(const char *path, struct battery_t *battery) {
         battery->consumption = (float)rate / 1e12 * voltage;
 	switch (battery->status) {
 	case CHARGING:
-		battery->remaining = 3600 * (charge_real - charge_now) / rate;
+		battery->remaining = (float)(charge_real - charge_now) / rate;
 		break;
 	case DISCHARGING:
-		battery->remaining = 3600 * charge_now / rate;
+		battery->remaining = (float)charge_now / rate;
 		break;
 	default:
 		battery->remaining = 0;
@@ -138,7 +138,7 @@ void battery_routine(cfg_t *config, struct text_t *text) {
                 FORMAT_PRE_RESOLVE;
                 FORMAT_RESOLVE("status", 6, "%d", battery.status);
                 FORMAT_RESOLVE("percentage", 10, "%.00f", battery.percentage);
-                FORMAT_RESOLVE("remaining", 9, "%f", battery.remaining);
+                FORMAT_RESOLVE("remaining", 9, "%02d:%02d", (int)battery.remaining, (int)(float)(battery.remaining * 60) / 60);
                 FORMAT_RESOLVE("consumption", 11, "%0.02fW", battery.consumption);
 		FORMAT_POST_RESOLVE;
         }
