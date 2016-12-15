@@ -1,4 +1,5 @@
-LDFLAGS=-lpthread -lconfuse -lasound
+LDFLAGS += -lpthread -lconfuse -lasound -lnl-3 -lnl-route-3
+CFLAGS += -I. -I/usr/include/libnl3
 
 SRC=$(wildcard *.c routines/*.c targets/*.c)
 OBJ=${SRC:.c=.o}
@@ -9,11 +10,11 @@ OBJ=${SRC:.c=.o}
 
 routines/%.o: routines/%.c
 	@echo "compiling routines...$<"
-	${CC} -g -c ${CFLAGS} -I.  -o $@ $<
+	${CC} -g -c ${CFLAGS} -o $@ $<
 
 targets/%.o: targets/%.c
 	@echo "compiling targets...$<"
-	${CC} -g -c ${CFLAGS} -I.  -o $@ $<
+	${CC} -g -c ${CFLAGS} -o $@ $<
 
 mstatus: ${OBJ}
 	@echo "building..."

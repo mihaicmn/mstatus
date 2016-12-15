@@ -71,6 +71,13 @@ static cfg_opt_t disk_opts[] = {
 	CFG_END()
 };
 
+static cfg_opt_t link_opts[] = {
+	CFG_STR("format", "%title: %ip4 %ip6 %up", CFGF_NONE), /* link is operational */
+	CFG_STR("format_up", NULL, CFGF_NONE), /* link is up and not operational */
+	CFG_STR("format_down", NULL, CFGF_NONE), /* link is down */
+	CFG_END()
+};
+
 static cfg_opt_t process_opts[] = {
 	CFG_STR("pidfile", NULL, CFGF_NONE),
 	CFG_UPDOWN("%title: %good"),
@@ -102,6 +109,7 @@ static cfg_opt_t opts[] = {
 	CFG_SEC("cpu_load",	cpu_load_opts,	CFGF_NONE),
 	CFG_SEC("cpu_temp",	cpu_temp_opts,	CFGF_NONE),
 	CFG_SEC("disk",		disk_opts,	CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("link",		link_opts,	CFGF_MULTI | CFGF_TITLE),
 	CFG_SEC("process",	process_opts,	CFGF_MULTI | CFGF_TITLE),
 	CFG_SEC("time",		time_opts,	CFGF_NONE),
 	CFG_SEC("volume",	volume_opts,	CFGF_MULTI | CFGF_TITLE),
