@@ -71,11 +71,18 @@ static cfg_opt_t disk_opts[] = {
 	CFG_END()
 };
 
-static cfg_opt_t link_opts[] = {
-	CFG_STR("format", "%title: %ip4 %ip6 %up", CFGF_NONE), /* link is operational */
-	CFG_STR("format_up", NULL, CFGF_NONE), /* link is up and not operational */
-	CFG_STR("format_down", NULL, CFGF_NONE), /* link is down */
-	CFG_END()
+static cfg_opt_t network_link_opts[] = {
+        CFG_STR("format", "%title: %ip4 %ip6 %up", CFGF_NONE), /* link is operational */
+        CFG_STR("format_up", NULL, CFGF_NONE), /* link is up and not operational */
+        CFG_STR("format_down", NULL, CFGF_NONE), /* link is down */
+        CFG_END()
+};
+
+static cfg_opt_t network_opts[] = {
+        CFG_STR_LIST("items", "{}", CFGF_NONE),
+        CFG_SEC("link", network_link_opts, CFGF_MULTI | CFGF_TITLE),
+        CFG_INTERVAL,
+        CFG_END()
 };
 
 static cfg_opt_t process_opts[] = {
@@ -109,19 +116,19 @@ static cfg_opt_t opts[] = {
 	CFG_SEC("cpu_load",	cpu_load_opts,	CFGF_NONE),
 	CFG_SEC("cpu_temp",	cpu_temp_opts,	CFGF_NONE),
 	CFG_SEC("disk",		disk_opts,	CFGF_MULTI | CFGF_TITLE),
-	CFG_SEC("link",		link_opts,	CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("network",	network_opts,	CFGF_NONE),
 	CFG_SEC("process",	process_opts,	CFGF_MULTI | CFGF_TITLE),
 	CFG_SEC("time",		time_opts,	CFGF_NONE),
 	CFG_SEC("volume",	volume_opts,	CFGF_MULTI | CFGF_TITLE),
 	CFG_END()
 };
 
-static cfg_t *config;
+static cfg_t *main_config;
 
 
 void config_load(const char *path) {
-	config = cfg_init(opts, CFGF_NONE);
-	switch (cfg_parse(config, path)) {
+	main_config = cfg_init(opts, CFGF_NONE);
+	switch (cfg_parse(main_config, path)) {
 	case CFG_SUCCESS:
 		break;
 	default:
@@ -130,20 +137,28 @@ void config_load(const char *path) {
 }
 
 void config_unload() {
-	cfg_free(config);
-	config = NULL;
+	cfg_free(main_config);
+	main_config = NULL;
 }
 
 
 cfg_t *config_get_general() {
-	return cfg_getsec(config, "general");
+	return cfg_getsec(main_config, "general");
 }
 
-const int config_get_item_count() {
+const int config_get_block_count() {
+	return config_get_subcount(main_config);
+}
+
+cfg_t *config_get_block(const int index) {
+	return config_get_sub(main_config, index);
+}
+
+const int config_get_subcount(cfg_t *config) {
 	return cfg_size(config, "items");
 }
 
-cfg_t *config_get_item(const int index) {
+cfg_t *config_get_sub(cfg_t *config, const int index) {
 	char *selector = cfg_getnstr(config, "items", index);
 	char *name = NULL;
 	char *title = NULL;

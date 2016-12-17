@@ -9,6 +9,7 @@ void link_routine(cfg_t *config, struct text_t * text) {
 		die("could not fetch link details\n");
 
 	const char *format = FORMAT_LOAD_DEFAULT;
+	text->color = COLOR_GOOD;
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
