@@ -73,8 +73,8 @@ static cfg_opt_t disk_opts[] = {
 
 static cfg_opt_t network_link_opts[] = {
         CFG_STR("format", "%title: %ip4 %ip6 %up", CFGF_NONE), /* link is operational */
-        CFG_STR("format_up", NULL, CFGF_NONE), /* link is up and not operational */
-        CFG_STR("format_down", NULL, CFGF_NONE), /* link is down */
+        CFG_STR("format_degraded", NULL, CFGF_NONE), /* link is up and not operational */
+        CFG_STR("format_bad", NULL, CFGF_NONE), /* link is down */
         CFG_END()
 };
 

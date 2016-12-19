@@ -2,12 +2,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-
 #include "routine.h"
-
-#define CHOOSE_BATT_FORMAT(key, scolor)		\
-	CHOOSE_FORMAT(key);			\
-	text->color = scolor;
 
 #define CHOOSE_BATT_FORMAT_DISCHARGING(value)	\
 	choose_fmtcol_fallback_threshold(config, value, BELOW, "format_discharging", &format, &text->color)
@@ -115,10 +110,10 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 
 	switch (battery.status) {
 	case FULL:
-		CHOOSE_BATT_FORMAT("format_full", COLOR_GOOD);
+		CHOOSE_FORMAT_AND_COLOR("format_full", COLOR_GOOD);
 		break;
 	case CHARGING:
-		CHOOSE_BATT_FORMAT("format_charging",  COLOR_DEFAULT);
+		CHOOSE_FORMAT_AND_COLOR("format_charging",  COLOR_DEFAULT);
 		break;
 	case DISCHARGING:
 		threshold_type = cfg_getstr(config, "threshold_type");
@@ -130,7 +125,7 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 			die("invalid threshold_type: %s\n", threshold_type);
 		break;
 	case UNKNOWN:
-		CHOOSE_BATT_FORMAT("format_unknown", COLOR_DEFAULT);
+		CHOOSE_FORMAT_AND_COLOR("format_unknown", COLOR_DEFAULT);
 		break;
 	}
 

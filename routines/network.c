@@ -25,6 +25,17 @@ struct link_t {
 	char ip6[INET6_ADDRSTRLEN];
 };
 
+static inline const char *state_valueof(const enum state_t state) {
+	switch (state) {
+	case OPERATIONAL:
+		return "operational";
+	case UP:
+		return "up";
+	case DOWN:
+		return "down";
+	}
+}
+
 static inline int link_fetch(struct cache_t *cache, const char *name, struct link_t *link) {
 	struct rtnl_link *rtlink = rtnl_link_get_by_name(cache->links, name);
 
@@ -109,18 +120,25 @@ void link_subroutine(cfg_t *config, void *context, struct text_t *text) {
 	struct cache_t *cache = context;
 	struct link_t link;
 
-	if (link_fetch(cache, name, &link) < 0)
-		die("could not fetch link details\n");
-
-	const char *format = FORMAT_LOAD_DEFAULT;
-	text->color = COLOR_GOOD;
+	const char *format;
+	if (link_fetch(cache, name, &link) < 0) {
+		CHOOSE_FORMAT_AND_COLOR("format_bad", COLOR_BAD);
+	} else {
+		if (link.ip4[0] || link.ip6[0]) {
+			CHOOSE_FORMAT_AND_COLOR("format", COLOR_GOOD);
+		} else if (link.state == OPERATIONAL || link.state == UP) {
+			CHOOSE_FORMAT_AND_COLOR("format_degraded", COLOR_DEGRADED);
+		} else /*if (link.state == DOWN)*/ {
+			CHOOSE_FORMAT_AND_COLOR("format_bad", COLOR_BAD);
+		}
+	}
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
 		FORMAT_RESOLVE("title", 5, "%s", name);
 		FORMAT_RESOLVE("ip4", 3, "%s", link.ip4);
 		FORMAT_RESOLVE("ip6", 3, "%s", link.ip6);
-		FORMAT_RESOLVE("state", 5, "%d", link.state);
+		FORMAT_RESOLVE("state", 5, "%s", state_valueof(link.state));
 		FORMAT_POST_RESOLVE;
 	}
 }

@@ -14,6 +14,10 @@
 #define CHOOSE_FMTCOL_BYTHRESHOLD(value, comp) choose_fmtcol_threshold(config, value, comp, &format, &text->color)
 #define CHOOSE_FMTCOL_FALLBACK_BYTHRESHOLD(value, comp, fallback) choose_fmtcol_fallback_threshold(config, value, comp, fallback, &format, &text->color)
 
+#define CHOOSE_FORMAT_AND_COLOR(key, scolor)	\
+	CHOOSE_FORMAT(key);			\
+	text->color = scolor;
+
 
 #define FORMAT_WALK(format) const char *c; for (c = format; *c != '\0'; c++)
 #define FORMAT_PRE_RESOLVE				\
