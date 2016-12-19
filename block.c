@@ -7,10 +7,8 @@
 #define FOR_GROUP int i; for (i = 0; i < group->sub_count; i++)
 #define TEXT_LENGTH 128
 
-static inline void item_init(struct item_t *item, cfg_t *config) {
+static inline void item_init(struct item_t *item, cfg_t *config, const char *name) {
 	text_init(&item->text, TEXT_LENGTH);
-
-	const char *name = cfg_name(config);
 
 	if (STARTS_WITH("battery", name, 7))
 		item->routine = &battery_routine;
@@ -32,9 +30,9 @@ static inline void item_init(struct item_t *item, cfg_t *config) {
 		die("item_routine \"%s\" not found\n");
 }
 
-static inline void group_init(struct group_t *group, cfg_t *config, int sub_count) {
+static inline void group_init(struct group_t *group, cfg_t *config, const char *name) {
+	const int sub_count = config_get_subcount(config);
 	cfg_t *sub_config;
-	const char *name = cfg_name(config);
 
 	if (STARTS_WITH(name, "network", 7)) {
 		group->pre_routine = &network_preroutine;
@@ -104,13 +102,13 @@ void block_init(struct block_t *block, cfg_t *config) {
 	block->config = config;
 	block->interval = cfg_getint(config, "interval");
 
-	int sub_count = config_get_subcount(config);
-	if (sub_count > 0) {
+	const char *name = cfg_name(config);
+	if (STARTS_WITH(name, "network", 7)) {
 		block->type = GROUP;
-		group_init(&block->content.group, config, sub_count);
+		group_init(&block->content.group, config, name);
 	} else {
 		block->type = ITEM;
-		item_init(&block->content.item, config);
+		item_init(&block->content.item, config, name);
 	}
 }
 
