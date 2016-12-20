@@ -20,6 +20,8 @@
 	CFG_STR("format", cformat, CFGF_NONE),			\
 	CFG_STR("format_bad", NULL, CFGF_NONE)
 
+#define CFG_MEASUREMENT_SYSTEM CFG_STR("measurement_system", "jedec", CFGF_NONE) /* metric|iec|jedec  */
+
 static cfg_opt_t general_opts[] = {
 	CFG_STR("separator", "|", CFGF_NONE),
 	CFG_BOOL("colors", cfg_true, CFGF_NONE),
@@ -66,7 +68,7 @@ static cfg_opt_t disk_opts[] = {
 	CFG_THRESHOLD(5, 10, "%free %used %total"),
 	CFG_STR("threshold_type", "free" , CFGF_NONE), /* free|avail|used */
 	CFG_STR("threshold_unit", "%", CFGF_NONE), /* k|M|G|T|% */
-	CFG_STR("measurement_system", "jedec", CFGF_NONE), /* metric|iec|jedec  */
+	CFG_MEASUREMENT_SYSTEM,
 	CFG_INTERVAL,
 	CFG_END()
 };
@@ -78,9 +80,15 @@ static cfg_opt_t network_link_opts[] = {
         CFG_END()
 };
 
+static cfg_opt_t network_wifi_opts[] = {
+	CFG_STR("format", "%title: %essid %strength%", CFGF_NONE),
+	CFG_END()
+};
+
 static cfg_opt_t network_opts[] = {
         CFG_STR_LIST("items", "{}", CFGF_NONE),
         CFG_SEC("link", network_link_opts, CFGF_MULTI | CFGF_TITLE),
+        CFG_SEC("wifi", network_wifi_opts, CFGF_MULTI | CFGF_TITLE),
         CFG_INTERVAL,
         CFG_END()
 };

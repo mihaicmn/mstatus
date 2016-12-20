@@ -55,6 +55,8 @@ static inline void group_init(struct group_t *group, cfg_t *config, const char *
 
 		if (STARTS_WITH("link", name, 4))
 			group->sub_routines[i] = &link_subroutine;
+		else if (STARTS_WITH("wifi", name, 4))
+			group->sub_routines[i] = &wifi_subroutine;
 		else
 			die("subroutine %s not found\n", name);
 	}

@@ -17,3 +17,4 @@ void network_preroutine(cfg_t *config, void **context);
 void network_postroutine(cfg_t *config, void **context);
 
 void link_subroutine(cfg_t *config, void *context, struct text_t *text);
+void wifi_subroutine(cfg_t *config, void *context, struct text_t *text);
