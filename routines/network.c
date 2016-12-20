@@ -5,6 +5,7 @@
 #include <linux/if.h>
 
 #include "routine.h"
+#include "converter.h"
 #include "util.h"
 
 #define MAX_IP4 20
@@ -12,7 +13,8 @@
 #define MAX_ESSID 32
 #define MAX_BSSID 6
 
-struct cache_t {
+struct network_t {
+	enum msystem_t msystem;
 	struct nl_cache *links;
 	struct nl_cache *addrs;
 };
@@ -31,12 +33,15 @@ struct link_t {
 };
 
 struct wifi_t {
+	enum msystem_t msystem;
+
 	int index;
 	char essid[MAX_ESSID];
 	float strength;
 	int32_t signal;
-	int rx_rate;
-	int tx_rate;
+
+	struct usize_t rx_rate;
+	struct usize_t tx_rate;
 };
 
 /*---	COMMON HELPERS	---*/
@@ -92,29 +97,32 @@ static inline void sgenl_send(struct nl_sock *socket, struct nl_msg *msg, nl_rec
 
 /*---	NETWORK GROUP	---*/
 void network_preroutine(cfg_t *config, void **context) {
-	struct cache_t *cache = smalloc(sizeof(struct cache_t));
+	struct network_t *network = smalloc(sizeof(struct network_t));
 	struct nl_sock *socket = snl_connect(NETLINK_ROUTE);
 
-	if (rtnl_link_alloc_cache(socket, AF_UNSPEC, &cache->links) < 0)
+	if (rtnl_link_alloc_cache(socket, AF_UNSPEC, &network->links) < 0)
 		die("cannot alloc link_cache\n");
 
-	if (rtnl_addr_alloc_cache(socket, &cache->addrs) < 0)
+	if (rtnl_addr_alloc_cache(socket, &network->addrs) < 0)
 		die("cannot alloc addr_cache\n");
 
 	nl_socket_free(socket);
-	*context = cache;
+
+	network->msystem = system_valueof(cfg_getstr(config, "measurement_system"));
+
+	*context = network;
 }
 
 void network_postroutine(cfg_t *config, void **context) {
-	struct cache_t *cache = *context;
-	nl_cache_free(cache->links);
-	nl_cache_free(cache->addrs);
-	sfree(cache);
+	struct network_t *network = *context;
+	nl_cache_free(network->links);
+	nl_cache_free(network->addrs);
+	sfree(network);
 }
 
 /*---	LINK SUBITEM	---*/
-static inline int link_fetch(struct cache_t *cache, const char *name, struct link_t *link) {
-	struct rtnl_link *rtlink = rtnl_link_get_by_name(cache->links, name);
+static inline int link_fetch(struct network_t *network, const char *name, struct link_t *link) {
+	struct rtnl_link *rtlink = rtnl_link_get_by_name(network->links, name);
 
 	if (rtlink == NULL)
 		return -1;
@@ -133,7 +141,7 @@ static inline int link_fetch(struct cache_t *cache, const char *name, struct lin
 
 	rtnl_link_put(rtlink);
 
-	struct nl_object *object = nl_cache_get_first(cache->addrs);
+	struct nl_object *object = nl_cache_get_first(network->addrs);
 	struct rtnl_addr *rtaddr;
 	struct nl_addr *addr;
 	int family;
@@ -162,11 +170,11 @@ static inline int link_fetch(struct cache_t *cache, const char *name, struct lin
 
 void link_subroutine(cfg_t *config, void *context, struct text_t *text) {
 	const char *name = cfg_title(config);
-	struct cache_t *cache = context;
+	struct network_t *network = context;
 	struct link_t link;
 
 	const char *format;
-	if (link_fetch(cache, name, &link) < 0) {
+	if (link_fetch(network, name, &link) < 0) {
 		CHOOSE_FORMAT_AND_COLOR("format_bad", COLOR_BAD);
 	} else {
 		if (link.ip4[0] && link.ip6[0]) {
@@ -279,19 +287,19 @@ static int handler_get_station(struct nl_msg *msg, void *arg) {
 		return NL_SKIP;
 
 	if (tb_rxrate[NL80211_RATE_INFO_BITRATE])
-		wifi->rx_rate = nla_get_u16(tb_rxrate[NL80211_RATE_INFO_BITRATE]);
+		convert_auto(wifi->msystem, nla_get_u16(tb_rxrate[NL80211_RATE_INFO_BITRATE]) * 100000, &wifi->rx_rate);
 
 	if (nla_parse_nested(tb_txrate, NL80211_RATE_INFO_MAX, tb_sta[NL80211_STA_INFO_TX_BITRATE], rate_policy) < 0)
 		return NL_SKIP;
 
 	if (tb_txrate[NL80211_RATE_INFO_BITRATE])
-		wifi->tx_rate = nla_get_u16(tb_txrate[NL80211_RATE_INFO_BITRATE]);
+		convert_auto(wifi->msystem, nla_get_u16(tb_txrate[NL80211_RATE_INFO_BITRATE]) * 100000, &wifi->tx_rate);
 
 	return NL_SKIP;
 }
 
-static inline int wifi_fetch(struct cache_t *cache, const char *name, struct wifi_t *wifi) {
-	struct rtnl_link *rtlink = rtnl_link_get_by_name(cache->links, name);
+static inline int wifi_fetch(struct network_t *network, const char *name, struct wifi_t *wifi) {
+	struct rtnl_link *rtlink = rtnl_link_get_by_name(network->links, name);
 
 	if (rtlink == NULL)
 		return -1;
@@ -317,12 +325,13 @@ static inline int wifi_fetch(struct cache_t *cache, const char *name, struct wif
 
 void wifi_subroutine(cfg_t *config, void *context, struct text_t *text) {
 	const char *name = cfg_title(config);
-	struct cache_t *cache = context;
+	struct network_t *network = context;
 	struct wifi_t wifi;
 
 	memset(&wifi, 0, sizeof(struct wifi_t));
+	wifi.msystem = network->msystem;
 
-	if (wifi_fetch(cache, name, &wifi) < 0)
+	if (wifi_fetch(network, name, &wifi) < 0)
 		die("cannot fetch wifi info\n");
 
 	const char *format = FORMAT_LOAD_DEFAULT;
@@ -332,10 +341,10 @@ void wifi_subroutine(cfg_t *config, void *context, struct text_t *text) {
 		FORMAT_PRE_RESOLVE;
 		FORMAT_RESOLVE("title", 5, "%s", name);
 		FORMAT_RESOLVE("essid", 5, "%s", wifi.essid);
-		FORMAT_RESOLVE("strength", 8, "%.01f", wifi.strength);
-		FORMAT_RESOLVE("signal", 6, "%ddBm", wifi.signal);
-		FORMAT_RESOLVE("rxrate", 6, "%d", wifi.rx_rate);
-		FORMAT_RESOLVE("txrate", 6, "%d", wifi.tx_rate);
+		FORMAT_RESOLVE("strength", 8, "%.0f", wifi.strength);
+		FORMAT_RESOLVE("signal", 6, "%d", wifi.signal);
+		FORMAT_RESOLVE("rxrate", 6, "%3.0f%s", wifi.rx_rate.value, wifi.rx_rate.unit);
+		FORMAT_RESOLVE("txrate", 6, "%3.0f%s", wifi.tx_rate.value, wifi.tx_rate.unit);
 		FORMAT_POST_RESOLVE;
 	}
 }

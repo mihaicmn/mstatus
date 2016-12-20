@@ -89,6 +89,7 @@ static cfg_opt_t network_opts[] = {
         CFG_STR_LIST("items", "{}", CFGF_NONE),
         CFG_SEC("link", network_link_opts, CFGF_MULTI | CFGF_TITLE),
         CFG_SEC("wifi", network_wifi_opts, CFGF_MULTI | CFGF_TITLE),
+	CFG_MEASUREMENT_SYSTEM,
         CFG_INTERVAL,
         CFG_END()
 };
