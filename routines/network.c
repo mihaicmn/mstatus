@@ -3,6 +3,7 @@
 #include <netlink/route/link.h>
 #include <linux/nl80211.h>
 #include <linux/if.h>
+#include <string.h>
 
 #include "routine.h"
 #include "converter.h"

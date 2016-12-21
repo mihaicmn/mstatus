@@ -1,10 +1,32 @@
 #include <stdio.h>
+#include <signal.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "bar.h"
 #include "config.h"
 #include "util.h"
 
+#define SIGACTION(signal) if (sigaction(signal, &action, NULL) < 0) die("cannot register signal handler\n")
+
+static void signal_handler(int signal) {
+	switch(signal) {
+	case SIGUSR1:
+		bar_refresh();
+		break;
+	default:
+		bar_break();
+		break;
+	}
+}
+
+static void register_signals() {
+	struct sigaction action;
+	memset(&action, 0, sizeof(struct sigaction));
+	action.sa_handler = &signal_handler;
+	SIGACTION(SIGTERM);
+	SIGACTION(SIGUSR1);
+}
 
 static void select_path(const char **paths, const int len, char *result) {
 	int i;
@@ -15,6 +37,8 @@ static void select_path(const char **paths, const int len, char *result) {
 }
 
 int main(int argc, char *argv[]) {
+	int option;
+	char path[512];
 	const char *paths[] = {
 		NULL, /* placeholder for user specified config file */
 		"$XDG_CONFIG_HOME/mstatus.conf",
@@ -26,8 +50,6 @@ int main(int argc, char *argv[]) {
 		"./mstatus.conf",
 		"/etc/mstatus/config"
 	};
-	char path[512];
-	int option;
 
 	while ((option = getopt(argc, argv, "c:v")) > 0) {
 		switch (option) {
@@ -45,9 +67,12 @@ int main(int argc, char *argv[]) {
 
 	select_path(paths, 9, path);
 	config_load(path);
+
 	bar_init();
+	register_signals();
 	bar_loop();
 	bar_dismiss();
 	config_unload();
+
 	return 0;
 }
