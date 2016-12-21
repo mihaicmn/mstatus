@@ -23,11 +23,6 @@ inline const char *format_load_fallback(cfg_t *config, const char *fmtkey, const
 }
 
 
-inline const char *format_choose_by_bool(cfg_t *config, const bool value) {
-	return format_load(config, value ? "format" : "format_bad");
-}
-
-
 inline const char *format_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp, const char *fallback_fmtkey) {
 	double threshold;
 	const char *format_key;
@@ -40,11 +35,6 @@ inline const char *format_choose_by_threshold(cfg_t *config, const double value,
 		format_key = fallback_fmtkey;
 
 	return format_load_fallback(config, format_key, fallback_fmtkey);
-}
-
-
-inline enum color_t color_choose_by_bool(const bool value) {
-	return value ? COLOR_GOOD : COLOR_BAD;
 }
 
 inline enum color_t color_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp, const enum color_t default_color) {

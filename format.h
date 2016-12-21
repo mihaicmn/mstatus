@@ -26,9 +26,9 @@
 
 #define FORMAT_LOAD_DEFAULT FORMAT_LOAD("format")
 
-#define CHOOSE_FMTCOL_BYBOOL(value) 			\
-	format = format_choose_by_bool(config, value);	\
-	text->color = color_choose_by_bool(value)
+#define CHOOSE_FMTCOL_BYBOOL(value) 					\
+	format = format_load(config, value ? "format" : "format_bad");	\
+	text->color = value ? COLOR_GOOD : COLOR_BAD
 
 #define CHOOSE_FMTCOL_BYTHRESHOLD(value, comp)						\
 	format = format_choose_by_threshold(config, value, comp, "format");		\
@@ -51,8 +51,5 @@ enum comp_t { ABOVE, BELOW };
 inline const char *format_load(cfg_t *config, const char *fmtkey);
 inline const char *format_load_fallback(cfg_t *config, const char *fmtkey, const char *fallback_fmtkey);
 
-inline const char *format_choose_by_bool(cfg_t *confg, const bool value);
 inline const char *format_choose_by_threshold(cfg_t *confg, const double value, enum comp_t comp, const char *fallback_fmtkey);
-
-inline enum color_t color_choose_by_bool(const bool value);
 inline enum color_t color_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp, const enum color_t def_color);
