@@ -12,6 +12,8 @@
 #define MAX_IP6 48
 #define MAX_ESSID 32
 #define MAX_BSSID 6
+#define STRONGEST_SIGNAL -20
+#define WEAKEST_SIGNAL -90
 
 struct network_t {
 	enum msystem_t msystem;
@@ -243,7 +245,12 @@ static int handler_get_scan(struct nl_msg *msg, void *arg) {
 
 	if (tb_bss[NL80211_BSS_SIGNAL_MBM]) {
 		wifi->signal = (int32_t)nla_get_u32(tb_bss[NL80211_BSS_SIGNAL_MBM]) / 100; /* convert mBm to dBm */
-		wifi->strength = interpolate(wifi->signal, -90 /*min*/, -20 /*max*/);
+
+		// idea from ipw2x00.c
+		const int delta1 = STRONGEST_SIGNAL - WEAKEST_SIGNAL;
+		const int delta2 = STRONGEST_SIGNAL - wifi->signal;
+
+		wifi->strength = (100 * delta1 * delta1 - delta2 * ( 15 * delta1 + 62 * delta2)) / (delta1 * delta1); 
 	}
 
 	if (tb_bss[NL80211_BSS_SIGNAL_UNSPEC])

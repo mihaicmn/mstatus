@@ -53,7 +53,3 @@ int file_scanf(const char *file, const char *fmt, ...) {
 	fclose(f);
 	return result;
 }
-
-float interpolate(const float value, const float min, const float max) {
-	return (100.0 * (value - min)) / (max - min);
-}
