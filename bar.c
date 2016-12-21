@@ -23,14 +23,13 @@ static pthread_mutex_t mutex;
 static pthread_cond_t update_cond;
 static pthread_cond_t sleep_cond;
 
-bool looping = true;
-
-struct block_t *blocks;
-int block_count;
+static struct block_t *blocks;
+static int block_count;
 
 static int sleeping_period;
 static int sleeping_cycle;
 
+static bool looping = true;
 
 static inline int greatest_common_divisor(int x, int y) {
 	while(x != y)
