@@ -2,6 +2,7 @@
 
 #include "routine.h"
 #include "converter.h"
+#include "util.h"
 
 struct disk_t {
 	unsigned long free;

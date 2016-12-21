@@ -1,6 +1,7 @@
 #include <alsa/asoundlib.h>
 
 #include "routine.h"
+#include "util.h"
 
 struct volume_t {
 	double level;

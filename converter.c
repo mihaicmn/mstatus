@@ -1,5 +1,6 @@
 #include "converter.h"
 #include "strings.h"
+#include "util.h"
 
 inline enum msystem_t system_valueof(const char *name) {
 	if (EQUALS(name, "metric"))
@@ -8,7 +9,7 @@ inline enum msystem_t system_valueof(const char *name) {
 		return IEC;
 	if (EQUALS(name, "jedec"))
 		return JEDEC;
-	die("invalid measurement_system: %s\n", name);
+	return JEDEC;
 }
 
 static struct magnitude_t {

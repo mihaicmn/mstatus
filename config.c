@@ -156,7 +156,7 @@ cfg_t *config_get_general() {
 	return cfg_getsec(main_config, "general");
 }
 
-const int config_get_block_count() {
+int config_get_block_count() {
 	return config_get_subcount(main_config);
 }
 
@@ -164,7 +164,7 @@ cfg_t *config_get_block(const int index) {
 	return config_get_sub(main_config, index);
 }
 
-const int config_get_subcount(cfg_t *config) {
+int config_get_subcount(cfg_t *config) {
 	return cfg_size(config, "items");
 }
 
@@ -173,7 +173,7 @@ cfg_t *config_get_sub(cfg_t *config, const int index) {
 	char *name = NULL;
 	char *title = NULL;
 
-	int i;
+	size_t i;
 	for (i = 0; i < strlen(selector); i++) {
 		if (selector[i] == ' ') {
 			name = strndup(selector, i);

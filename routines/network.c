@@ -1,6 +1,8 @@
 #include <netlink/netlink.h>
 #include <netlink/route/addr.h>
 #include <netlink/route/link.h>
+#include <netlink/genl/ctrl.h>
+#include <netlink/genl/genl.h>
 #include <linux/nl80211.h>
 #include <linux/if.h>
 #include <string.h>
@@ -54,7 +56,7 @@ static inline const char *state_valueof(const enum state_t state) {
 		return "operational";
 	case UP:
 		return "up";
-	case DOWN:
+	default /*DOWN*/:
 		return "down";
 	}
 }
@@ -99,7 +101,7 @@ static inline void sgenl_send(struct nl_sock *socket, struct nl_msg *msg, nl_rec
 }
 
 /*---	NETWORK GROUP	---*/
-void network_preroutine(cfg_t *config, void **context) {
+void network_pre_routine(cfg_t *config, void **context) {
 	struct network_t *network = smalloc(sizeof(struct network_t));
 	struct nl_sock *socket = snl_connect(NETLINK_ROUTE);
 
@@ -116,7 +118,7 @@ void network_preroutine(cfg_t *config, void **context) {
 	*context = network;
 }
 
-void network_postroutine(cfg_t *config, void **context) {
+void network_post_routine(void **context) {
 	struct network_t *network = *context;
 	nl_cache_free(network->links);
 	nl_cache_free(network->addrs);

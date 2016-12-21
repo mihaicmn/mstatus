@@ -7,8 +7,8 @@ struct item_t {
 
 struct group_t {
 	void *context;
-	group_routine_t pre_routine;
-	group_routine_t post_routine;
+	group_pre_routine_t pre_routine;
+	group_post_routine_t post_routine;
 
 	int sub_count;
 	cfg_t **sub_configs;

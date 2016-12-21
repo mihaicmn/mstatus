@@ -1,13 +1,14 @@
 #include <stdio.h>
 
 #include "block.h"
+#include "output.h" //TODO shouldn't depend on output
 #include "strings.h"
 #include "util.h"
 
 #define FOR_GROUP int i; for (i = 0; i < group->sub_count; i++)
 #define TEXT_LENGTH 128
 
-static inline void item_init(struct item_t *item, cfg_t *config, const char *name) {
+static inline void item_init(struct item_t *item, const char *name) {
 	text_init(&item->text, TEXT_LENGTH);
 
 	if (STARTS_WITH("battery", name, 7))
@@ -35,8 +36,8 @@ static inline void group_init(struct group_t *group, cfg_t *config, const char *
 	cfg_t *sub_config;
 
 	if (STARTS_WITH(name, "network", 7)) {
-		group->pre_routine = &network_preroutine;
-		group->post_routine = &network_postroutine;
+		group->pre_routine = &network_pre_routine;
+		group->post_routine = &network_post_routine;
 	} else {
 		die("invalid group name %s\n", name);
 	}
@@ -87,7 +88,7 @@ static inline void group_refresh(struct group_t *group, cfg_t *config) {
 		text_putnull(group->sub_texts + i);
 	}
 
-	group->post_routine(config, &group->context);
+	group->post_routine(&group->context);
 }
 
 static inline void item_print(struct item_t *item) {
@@ -110,7 +111,7 @@ void block_init(struct block_t *block, cfg_t *config) {
 		group_init(&block->content.group, config, name);
 	} else {
 		block->type = ITEM;
-		item_init(&block->content.item, config, name);
+		item_init(&block->content.item, name);
 	}
 }
 

@@ -3,6 +3,7 @@
 #include <fcntl.h>
 
 #include "routine.h"
+#include "util.h"
 
 #define BUFF_SIZE 1024
 
@@ -23,7 +24,7 @@ struct battery_t {
 static int get_battery_info(const char *path, struct battery_t *battery) {
 	int fd, count;
 	char buff[BUFF_SIZE], *cursor;
-	int charge_design, charge_real, charge_now, rate, voltage;
+	int charge_real, charge_now, rate, voltage;
 
 	if ((fd = open(path, O_RDONLY)) < 0)
 		return -1;

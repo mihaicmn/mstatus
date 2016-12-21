@@ -29,7 +29,7 @@ void sfree(void *ptr) {
 
 int file_expand(const char *glob, char *path) {
 	wordexp_t p;
-	int i, result = -1;
+	size_t i, result = -1;
 
 	wordexp(glob, &p, 0);
 	for (i = 0; i < p.we_wordc; i++) {

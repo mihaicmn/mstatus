@@ -3,10 +3,13 @@
 #include <string.h>
 
 #include "target.h"
+#include "util.h"
 
-static char term_color_good[5];
-static char term_color_degraded[5];
-static char term_color_bad[5];
+#define COLOR_LENGTH 5
+
+static char term_color_good[COLOR_LENGTH];
+static char term_color_degraded[COLOR_LENGTH];
+static char term_color_bad[COLOR_LENGTH];
 
 static void convert_color(const char *in_color, char *out_color) {
 	if (strlen(in_color) != 7/*#rrggbb*/ || in_color[0] != '#')
@@ -27,7 +30,7 @@ static void convert_color(const char *in_color, char *out_color) {
         int g = (color_long & (0xFF << 8)) / 0x8000;
         int b = (color_long & (0xFF << 16)) / 0x800000;
 
-	snprintf(out_color, sizeof(out_color), "\033[3%d;1m", (r << 2) | (g << 1) | b);
+	snprintf(out_color, COLOR_LENGTH *sizeof(char), "\033[3%d;1m", (r << 2) | (g << 1) | b);
 }
 
 static inline const char *select_color(enum color_t color) {

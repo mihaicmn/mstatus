@@ -1,4 +1,5 @@
 #include "routine.h"
+#include "util.h"
 
 
 static int get_cpu_temp(const char *path, int *result) {

@@ -16,7 +16,7 @@ inline const char *format_load(cfg_t *config, const char *fmtkey) {
 inline const char *format_load_fallback(cfg_t *config, const char *fmtkey, const char *fallback_fmtkey) {
 	const char *format = GET_STRING(fmtkey);
 	if (format == NULL)
-		format = GET_STRING(fmtkey);
+		format = GET_STRING(fallback_fmtkey);
 	if (format == NULL)
 		format = GET_STRING("format");
 	return format;

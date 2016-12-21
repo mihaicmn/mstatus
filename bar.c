@@ -67,6 +67,7 @@ static void *start_polling(void *arg) {
 	}
 
 	MUTEX_UNLOCK;
+	return NULL;
 }
 
 void bar_init() {

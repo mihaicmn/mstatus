@@ -3,6 +3,7 @@
 #include "output.h"
 #include "target.h"
 #include "strings.h"
+#include "util.h"
 
 #define GET_COLOR(key) cfg_getstr(config, key)
 

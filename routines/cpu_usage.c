@@ -1,4 +1,5 @@
 #include "routine.h"
+#include "util.h"
 
 static unsigned long long int prev_idle = 0;
 static unsigned long long int prev_total = 0;
