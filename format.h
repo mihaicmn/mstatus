@@ -4,41 +4,55 @@
 #include "strings.h"
 #include "text.h"
 
-
-#define FORMAT_LOAD(key) cfg_getstr(config, key)
-#define FORMAT_LOAD_DEFAULT cfg_getstr(config, "format")
-
-#define CHOOSE_FORMAT(key) choose_fmt(config, key, &format)
-#define CHOOSE_FORMAT_FALLBACK(key, fallback) choose_fmt(config, key, fallback, &format)
-#define CHOOSE_FMTCOL_BYBOOL(value) choose_fmtcol_bool(config, value, &format, &text->color)
-#define CHOOSE_FMTCOL_BYTHRESHOLD(value, comp) choose_fmtcol_threshold(config, value, comp, &format, &text->color)
-#define CHOOSE_FMTCOL_FALLBACK_BYTHRESHOLD(value, comp, fallback) choose_fmtcol_fallback_threshold(config, value, comp, fallback, &format, &text->color)
-
-#define CHOOSE_FORMAT_AND_COLOR(key, scolor)	\
-	CHOOSE_FORMAT(key);			\
-	text->color = scolor;
-
-
 #define FORMAT_WALK(format) const char *c; for (c = format; *c != '\0'; c++)
+
 #define FORMAT_PRE_RESOLVE				\
 	if (*c != '%') {				\
 		text_putc(text, *c);			\
 		continue;				\
 	}
+
 #define FORMAT_RESOLVE(variable, len, pattern, ...)	\
 	if (STARTS_WITH(c + 1, variable, len)) {	\
 		text_printf(text, pattern, __VA_ARGS__);\
 		c += len;				\
 		continue;				\
 	}
+
 #define FORMAT_POST_RESOLVE text_putc(text, '%')
 
 
+#define FORMAT_LOAD(key) format_load(config, key)
+
+#define FORMAT_LOAD_DEFAULT FORMAT_LOAD("format")
+
+#define CHOOSE_FMTCOL_BYBOOL(value) 			\
+	format = format_choose_by_bool(config, value);	\
+	text->color = color_choose_by_bool(value)
+
+#define CHOOSE_FMTCOL_BYTHRESHOLD(value, comp)						\
+	format = format_choose_by_threshold(config, value, comp, "format");		\
+	text->color = color_choose_by_threshold(config, value, comp, COLOR_DEFAULT)
+
+#define CHOOSE_FMTCOL_DEFAULT_BYTHRESHOLD(value, comp, def_color)			\
+	format = format_choose_by_threshold(config, value, comp, "format");		\
+	text->color = color_choose_by_threshold(config, value, comp, def_color)
+
+#define CHOOSE_FMTCOL_FALLBACK_BYTHRESHOLD(value, comp, fallback)			\
+	format = format_choose_by_threshold(config, value, comp, fallback);		\
+	text->color = color_choose_by_threshold(config, value, comp, COLOR_DEFAULT)
+
+#define CHOOSE_FORMAT_AND_COLOR(key, scolor)	\
+	format = FORMAT_LOAD(key);		\
+	text->color = scolor
+
 enum comp_t { ABOVE, BELOW };
 
-void choose_fmt(cfg_t *config, const char *fmtkey, const char **format);
-void choose_fmt_fallback(cfg_t *config, const char *fmtkey, const char *fallback_fmtkey, const char **format);
+inline const char *format_load(cfg_t *config, const char *fmtkey);
+inline const char *format_load_fallback(cfg_t *config, const char *fmtkey, const char *fallback_fmtkey);
 
-void choose_fmtcol_bool(cfg_t *config, const bool value, const char **format, enum color_t *color);
-#define choose_fmtcol_threshold(config, val, comp, fmt, col) choose_fmtcol_fallback_threshold(config, val, comp, "format", fmt, col)
-void choose_fmtcol_fallback_threshold(cfg_t *config, const double val, enum comp_t comp, const char *fallback_fmtkey, const char **fmt, enum color_t *col);
+inline const char *format_choose_by_bool(cfg_t *confg, const bool value);
+inline const char *format_choose_by_threshold(cfg_t *confg, const double value, enum comp_t comp, const char *fallback_fmtkey);
+
+inline enum color_t color_choose_by_bool(const bool value);
+inline enum color_t color_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp, const enum color_t def_color);
