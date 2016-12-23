@@ -180,7 +180,7 @@ void link_subroutine(cfg_t *config, void *context, struct text_t *text) {
 
 	const char *format;
 	if (link_fetch(network, name, &link) < 0) {
-		CHOOSE_FORMAT_AND_COLOR("format_bad", COLOR_BAD);
+		CHOOSE_FORMAT_AND_COLOR("format_down", COLOR_BAD);
 	} else {
 		if (link.ip4[0] && link.ip6[0]) {
 			CHOOSE_FORMAT_AND_COLOR("format", COLOR_GOOD);
