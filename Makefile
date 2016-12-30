@@ -1,6 +1,6 @@
 LDFLAGS += -lpthread -lconfuse -lasound -lnl-3 -lnl-route-3 -lnl-genl-3
 CFLAGS += -I. -I/usr/include/libnl3
-GFLAGS += -Wall -Wextra -Wshadow -pg
+GFLAGS += -Wall -Wextra -Wshadow
 
 
 SRC=$(wildcard *.c routines/*.c targets/*.c)

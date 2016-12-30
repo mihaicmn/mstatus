@@ -48,8 +48,8 @@
 
 enum comp_t { ABOVE, BELOW };
 
-inline const char *format_load(cfg_t *config, const char *fmtkey);
-inline const char *format_load_fallback(cfg_t *config, const char *fmtkey, const char *fallback_fmtkey);
+const char *format_load(cfg_t *config, const char *fmtkey);
+const char *format_load_fallback(cfg_t *config, const char *fmtkey, const char *fallback_fmtkey);
 
-inline const char *format_choose_by_threshold(cfg_t *confg, const double value, enum comp_t comp, const char *fallback_fmtkey);
-inline enum color_t color_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp, const enum color_t def_color);
+const char *format_choose_by_threshold(cfg_t *confg, const double value, enum comp_t comp, const char *fallback_fmtkey);
+enum color_t color_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp, const enum color_t def_color);

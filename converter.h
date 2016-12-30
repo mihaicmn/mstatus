@@ -12,7 +12,7 @@ struct usize_t {
 };
 
 
-inline enum msystem_t system_valueof(const char *name);
+enum msystem_t system_valueof(const char *name);
 
-inline void convert_auto(const enum msystem_t msystem, const long value, struct usize_t *result);
-inline void convert_to(const enum msystem_t msystem, const long value, const int unit_index, double *result);
+void convert_auto(const enum msystem_t msystem, const long value, struct usize_t *result);
+void convert_to(const enum msystem_t msystem, const long value, const int unit_index, double *result);
