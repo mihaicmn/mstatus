@@ -3,33 +3,39 @@
 #include "config.h"
 #include "util.h"
 
+
 #define CFG_INTERVAL 						\
 	CFG_INT("interval", 0, CFGF_NONE)
 
-#define CFG_COLOR(name, value)					\
-	CFG_STR(name, value, CFGF_NONE)
+
+#define CFG_COLOR_NORMAL					\
+	CFG_STR("color_normal", NULL, CFGF_NONE)
+#define CFG_COLOR_DEGRADED					\
+	CFG_STR("color_degraded", "#FFFF00", CFGF_NONE)
+#define CFG_COLOR_BAD						\
+	CFG_STR("color_bad", "#FF0000", CFGF_NONE)
+
 
 #define CFG_THRESHOLD(bad, degraded, cformat)			\
 	CFG_FLOAT("threshold_bad", bad, CFGF_NONE),		\
 	CFG_FLOAT("threshold_degraded", degraded, CFGF_NONE),	\
 	CFG_STR("format", cformat, CFGF_NONE),			\
 	CFG_STR("format_bad", NULL, CFGF_NONE),			\
-	CFG_STR("format_degraded", NULL, CFGF_NONE)
+	CFG_STR("format_degraded", NULL, CFGF_NONE),		\
+	CFG_COLOR_NORMAL,					\
+	CFG_COLOR_DEGRADED,					\
+	CFG_COLOR_BAD
 
-#define CFG_UPDOWN(cformat)					\
-	CFG_STR("format", cformat, CFGF_NONE),			\
-	CFG_STR("format_bad", NULL, CFGF_NONE)
 
-#define CFG_MEASUREMENT_SYSTEM CFG_STR("measurement_system", "jedec", CFGF_NONE) /* metric|iec|jedec  */
+#define CFG_MEASUREMENT_SYSTEM					\
+	CFG_STR("measurement_system", "jedec", CFGF_NONE) /* metric|iec|jedec  */
+
 
 static cfg_opt_t general_opts[] = {
 	CFG_STR("separator", "|", CFGF_NONE),
 	CFG_BOOL("colors", cfg_true, CFGF_NONE),
 	CFG_STR("target", "TERMINAL", CFGF_NONE),
 	CFG_INT("interval", 2, CFGF_NONE),
-	CFG_COLOR("color_good", "#00FF00"),
-	CFG_COLOR("color_degraded", "#FFFF00"),
-	CFG_COLOR("color_bad", "#FF0000"),
 	CFG_END()
 };
 
@@ -77,6 +83,9 @@ static cfg_opt_t network_link_opts[] = {
         CFG_STR("format", "%title: %ip4 %ip6 %up", CFGF_NONE), /* link is operational */
         CFG_STR("format_up", NULL, CFGF_NONE),
         CFG_STR("format_down", NULL, CFGF_NONE),
+	CFG_COLOR_NORMAL,
+	CFG_COLOR_DEGRADED,
+	CFG_COLOR_BAD,
         CFG_END()
 };
 
@@ -97,14 +106,18 @@ static cfg_opt_t network_opts[] = {
 
 static cfg_opt_t process_opts[] = {
 	CFG_STR("pidfile", NULL, CFGF_NONE),
-	CFG_UPDOWN("%title: %good"),
+	CFG_STR("format", "%title: %good", CFGF_NONE),
+	CFG_STR("format_bad", NULL, CFGF_NONE),
 	CFG_INTERVAL,
+	CFG_COLOR_NORMAL,
+	CFG_COLOR_BAD,
 	CFG_END()
 };
 
 static cfg_opt_t time_opts[] = { 
 	CFG_STR("format", "%F - %T", CFGF_NONE),
 	CFG_INTERVAL,
+	CFG_COLOR_NORMAL,
 	CFG_END()
 };
 
@@ -115,6 +128,8 @@ static cfg_opt_t volume_opts[] = {
 	CFG_STR("mixer", "Master", CFGF_NONE),
 	CFG_INT("index", 0, CFGF_NONE),
 	CFG_INTERVAL,
+	CFG_COLOR_NORMAL,
+	CFG_COLOR_DEGRADED,
 	CFG_END()
 };
 

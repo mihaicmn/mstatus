@@ -21,7 +21,9 @@ void process_routine(cfg_t *config, struct text_t *text) {
 	bool runs = process_runs(cfg_getstr(config, "pidfile"));
 	const char *format;
 
-	CHOOSE_FMTCOL_BYBOOL(runs);
+	CHOOSE_FMTCOL(
+			runs ? "format" : "format_bad",
+			runs ? "color_normal" : "color_bad");
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

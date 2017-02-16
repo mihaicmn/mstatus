@@ -180,14 +180,14 @@ void link_subroutine(cfg_t *config, void *context, struct text_t *text) {
 
 	const char *format;
 	if (link_fetch(network, name, &link) < 0) {
-		CHOOSE_FORMAT_AND_COLOR("format_down", COLOR_BAD);
+		CHOOSE_FMTCOL("format_down", "color_bad");
 	} else {
 		if (link.ip4[0] && link.ip6[0]) {
-			CHOOSE_FORMAT_AND_COLOR("format", COLOR_GOOD);
+			CHOOSE_FMTCOL("format", "color_normal");
 		} else if (link.state == OPERATIONAL || link.state == UP) {
-			CHOOSE_FORMAT_AND_COLOR("format_up", COLOR_DEGRADED);
+			CHOOSE_FMTCOL("format_up", "color_degraded");
 		} else /*if (link.state == DOWN)*/ {
-			CHOOSE_FORMAT_AND_COLOR("format_down", COLOR_BAD);
+			CHOOSE_FMTCOL("format_down", "color_bad");
 		}
 	}
 
@@ -343,9 +343,9 @@ void wifi_subroutine(cfg_t *config, void *context, struct text_t *text) {
 
 	const char *format;
 	if (wifi_fetch(network, name, &wifi) < 0 || !wifi.essid[0]) {
-		CHOOSE_FORMAT_AND_COLOR("format_disconnected", COLOR_BAD);
+		CHOOSE_FMTCOL("format_disconnected", "color_bad");
 	} else {
-		CHOOSE_FMTCOL_DEFAULT_BYTHRESHOLD(wifi.strength, BELOW, COLOR_GOOD);
+		CHOOSE_FMTCOL_BYTHRESHOLD(wifi.strength, BELOW);
 	}
 
 	FORMAT_WALK(format) {

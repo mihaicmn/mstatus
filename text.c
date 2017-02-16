@@ -9,7 +9,7 @@ void text_init(struct text_t *text, size_t capacity) {
 	text->content[0] = '\0';
 	text->cursor = text->content;
 	text->capacity = capacity;
-	text->color = COLOR_DEFAULT;
+	text->color = NULL;
 }
 
 void text_dismiss(struct text_t *text) {

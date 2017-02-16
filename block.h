@@ -23,7 +23,7 @@ enum block_type {
 
 struct block_t {
 	cfg_t *config;
-	char *name;
+	const char *name;
 	int interval;
 
 	enum block_type type;

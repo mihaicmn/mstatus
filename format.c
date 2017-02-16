@@ -13,16 +13,6 @@ inline const char *format_load(cfg_t *config, const char *fmtkey) {
 	return format;
 }
 
-inline const char *format_load_fallback(cfg_t *config, const char *fmtkey, const char *fallback_fmtkey) {
-	const char *format = GET_STRING(fmtkey);
-	if (format == NULL)
-		format = GET_STRING(fallback_fmtkey);
-	if (format == NULL)
-		format = GET_STRING("format");
-	return format;
-}
-
-
 inline const char *format_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp, const char *fallback_fmtkey) {
 	double threshold;
 	const char *format_key;
@@ -34,16 +24,32 @@ inline const char *format_choose_by_threshold(cfg_t *config, const double value,
 	else
 		format_key = fallback_fmtkey;
 
-	return format_load_fallback(config, format_key, fallback_fmtkey);
+	const char *format = GET_STRING(format_key);
+	if (format == NULL)
+		format = GET_STRING(fallback_fmtkey);
+	if (format == NULL)
+		format = GET_STRING("format");
+	return format;
 }
 
-inline enum color_t color_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp, const enum color_t default_color) {
+
+inline const char *color_load(cfg_t *config, const char *colkey) {
+	const char *color = GET_STRING(colkey);
+	if (color == NULL)
+		color = GET_STRING("color_normal");
+	return color;
+}
+
+inline const char *color_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp) {
         double threshold;
+	const char *color_key;
 
         if ((threshold = GET_THRESHOLD("threshold_bad")) > 0 && COMPARE(value, threshold, comp))
-                return COLOR_BAD;
+                color_key = "color_bad";
         else if ((threshold = GET_THRESHOLD("threshold_degraded")) > 0 && COMPARE(value, threshold, comp))
-		return COLOR_DEGRADED;
+		color_key = "color_degraded";
         else
-		return default_color;
+		color_key = "color_normal";
+
+	return color_load(config, color_key);
 }

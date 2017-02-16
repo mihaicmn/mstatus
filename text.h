@@ -3,18 +3,11 @@
 
 #include <stdlib.h>
 
-enum color_t {
-	COLOR_DEFAULT,
-	COLOR_GOOD,
-	COLOR_DEGRADED,
-	COLOR_BAD
-};
-
 struct text_t {
 	char *content;
 	char *cursor;
 	size_t capacity;
-	enum color_t color;
+	const char *color;
 };
 
 void text_init(struct text_t *text, size_t capacity);

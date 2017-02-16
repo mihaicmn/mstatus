@@ -108,23 +108,23 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 
 	switch (battery.status) {
 	case FULL:
-		CHOOSE_FORMAT_AND_COLOR("format_full", COLOR_GOOD);
+		CHOOSE_FMTCOL("format_full", "color_normal");
 		break;
 	case CHARGING:
-		CHOOSE_FORMAT_AND_COLOR("format_charging",  COLOR_DEFAULT);
+		CHOOSE_FMTCOL("format_charging", "color_normal");
 		break;
 	case DISCHARGING:
 		threshold_type = cfg_getstr(config, "threshold_type");
 		if (EQUALS(threshold_type, "percentage")) {
-			CHOOSE_FMTCOL_FALLBACK_BYTHRESHOLD(battery.percentage, BELOW, "format_discharging");
+			CHOOSE_FMTCOL_BYTHRESHOLD_FALLBACK(battery.percentage, BELOW, "format_discharging");
 		} else if (EQUALS(threshold_type, "minutes")) {
-			CHOOSE_FMTCOL_FALLBACK_BYTHRESHOLD(battery.remaining / 60, BELOW, "format_discharging");
+			CHOOSE_FMTCOL_BYTHRESHOLD_FALLBACK(battery.remaining / 60, BELOW, "format_discharging");
 		} else {
-			die("invalid threshold_type: %s\n", threshold_type);
+			CHOOSE_FMTCOL("format_discharging", "color_normal");
 		}
 		break;
 	case UNKNOWN:
-		CHOOSE_FORMAT_AND_COLOR("format_unknown", COLOR_DEFAULT);
+		CHOOSE_FMTCOL("format_unknown", "color_normal");
 		break;
 	}
 

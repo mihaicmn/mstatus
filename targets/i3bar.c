@@ -4,17 +4,6 @@
 
 #define PRINT_JSON_SEPARATOR printf(",")
 
-static inline const char *select_color(enum color_t color) {
-	switch (color) {
-	case COLOR_GOOD:
-		return color_good;
-	case COLOR_DEGRADED:
-		return color_degraded;
-	default:
-		return color_bad;
-	}
-}
-
 
 void i3bar_init() {
 	printf("{\"version\": 1}\n"); //print header
@@ -41,8 +30,8 @@ void i3bar_print(const struct text_t *t) {
 
 	printf("{\"full_text\":\"%s\"", t->content);
 
-	if (use_colors && t->color != COLOR_DEFAULT)
-		printf(",\"color\":\"%s\"", select_color(t->color));
+	if (use_colors && t->color)
+		printf(",\"color\":\"%s\"", t->color);
 
 	printf("}");
 }

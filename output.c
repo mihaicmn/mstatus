@@ -5,14 +5,8 @@
 #include "strings.h"
 #include "util.h"
 
-#define GET_COLOR(key) cfg_getstr(config, key)
-
 bool use_colors;
 bool append_separator;
-
-const char *color_good;
-const char *color_degraded;
-const char *color_bad;
 
 static target_init_t target_init = NULL;
 static target_dismiss_t target_dismiss = NULL;
@@ -23,7 +17,6 @@ static target_print_t target_print;
 void output_init(cfg_t *config) {
 	const char *target = cfg_getstr(config, "target");
 	if (EQUALS(target, "TERMINAL")) {
-		target_init = &terminal_init;
 		target_print = &terminal_print;
 	} else if (EQUALS(target, "I3BAR")) {
 		target_init = &i3bar_init;
@@ -36,9 +29,6 @@ void output_init(cfg_t *config) {
 	}
 
 	use_colors = cfg_getbool(config, "colors");
-	color_good = GET_COLOR("color_good");
-	color_degraded = GET_COLOR("color_degraded");
-	color_bad = GET_COLOR("color_bad");
 
 	if (target_init)
 		target_init();
