@@ -29,6 +29,9 @@ void output_init(cfg_t *config) {
 	}
 
 	use_colors = cfg_getbool(config, "colors");
+	color_normal = cfg_getstr(config, "color_normal");
+	color_degraded = cfg_getstr(config, "color_degraded");
+	color_bad = cfg_getstr(config, "color_bad");
 
 	if (target_init)
 		target_init();

@@ -4,6 +4,7 @@
 #include "strings.h"
 #include "text.h"
 
+
 #define FORMAT_WALK(format)				\
 	const char *c; for (c = format; *c != '\0'; c++)
 
@@ -36,10 +37,12 @@
 	format = format_choose_by_threshold(config, value, comp, fallback);		\
 	text->color = color_choose_by_threshold(config, value, comp)
 
+
 enum comp_t { ABOVE, BELOW };
+enum color_t { COLOR_NORMAL, COLOR_DEGRADED, COLOR_BAD };
 
 const char *format_load(cfg_t *config, const char *fmtkey);
 const char *format_choose_by_threshold(cfg_t *confg, const double value, enum comp_t comp, const char *fallback_fmtkey);
 
-const char *color_load(cfg_t *config, const char *colkey);
+const char *color_load(cfg_t *config, enum color_t color);
 const char *color_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp);

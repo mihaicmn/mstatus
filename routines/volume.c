@@ -61,7 +61,7 @@ void volume_routine(cfg_t *config, struct text_t *text) {
 
 	CHOOSE_FMTCOL(
 			volume.mute ? "format" : "format_muted",
-			volume.mute ? "color_normal" : "color_degraded");
+			volume.mute ? COLOR_NORMAL : COLOR_DEGRADED);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

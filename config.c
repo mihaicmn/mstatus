@@ -8,12 +8,17 @@
 	CFG_INT("interval", 0, CFGF_NONE)
 
 
-#define CFG_COLOR_NORMAL					\
-	CFG_STR("color_normal", NULL, CFGF_NONE)
-#define CFG_COLOR_DEGRADED					\
-	CFG_STR("color_degraded", "#FFFF00", CFGF_NONE)
-#define CFG_COLOR_BAD						\
-	CFG_STR("color_bad", "#FF0000", CFGF_NONE)
+#define CFG_COLOR_NORMAL(value)					\
+	CFG_STR("color_normal", value, CFGF_NONE)
+#define CFG_COLOR_DEGRADED(value)				\
+	CFG_STR("color_degraded", value, CFGF_NONE)
+#define CFG_COLOR_BAD(value)					\
+	CFG_STR("color_bad", value, CFGF_NONE)
+
+#define CFG_ITEM_COLORS						\
+	CFG_COLOR_NORMAL(NULL),					\
+	CFG_COLOR_DEGRADED(NULL),				\
+	CFG_COLOR_BAD(NULL)
 
 
 #define CFG_THRESHOLD(bad, degraded, cformat)			\
@@ -21,11 +26,7 @@
 	CFG_FLOAT("threshold_degraded", degraded, CFGF_NONE),	\
 	CFG_STR("format", cformat, CFGF_NONE),			\
 	CFG_STR("format_bad", NULL, CFGF_NONE),			\
-	CFG_STR("format_degraded", NULL, CFGF_NONE),		\
-	CFG_COLOR_NORMAL,					\
-	CFG_COLOR_DEGRADED,					\
-	CFG_COLOR_BAD
-
+	CFG_STR("format_degraded", NULL, CFGF_NONE)
 
 #define CFG_MEASUREMENT_SYSTEM					\
 	CFG_STR("measurement_system", "jedec", CFGF_NONE) /* metric|iec|jedec  */
@@ -33,9 +34,12 @@
 
 static cfg_opt_t general_opts[] = {
 	CFG_STR("separator", "|", CFGF_NONE),
-	CFG_BOOL("colors", cfg_true, CFGF_NONE),
 	CFG_STR("target", "TERMINAL", CFGF_NONE),
 	CFG_INT("interval", 2, CFGF_NONE),
+	CFG_BOOL("colors", cfg_true, CFGF_NONE),
+	CFG_COLOR_NORMAL(NULL),
+	CFG_COLOR_DEGRADED("#FFFF00"),
+	CFG_COLOR_BAD("#FF0000"),
 	CFG_END()
 };
 
@@ -45,20 +49,23 @@ static cfg_opt_t battery_opts[] = {
 	CFG_STR("format_discharging", NULL, CFGF_NONE),
 	CFG_STR("format_full", NULL, CFGF_NONE),
 	CFG_STR("format_unknown", NULL, CFGF_NONE),
-	CFG_THRESHOLD(5, 15, "status %percentage %remaining %consumption"),
 	CFG_STR("threshold_type", "percentage" , CFGF_NONE), /* percentage|minutes */
+	CFG_THRESHOLD(5, 15, "status %percentage %remaining %consumption"),
+	CFG_ITEM_COLORS,
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_usage_opts[] = {
 	CFG_THRESHOLD(95, 90, "%usage"),
+	CFG_ITEM_COLORS,
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t cpu_load_opts[] = {
 	CFG_THRESHOLD(5, 3, "%1min %5min %15min"),
+	CFG_ITEM_COLORS,
 	CFG_INTERVAL,
 	CFG_END()
 };
@@ -66,6 +73,7 @@ static cfg_opt_t cpu_load_opts[] = {
 static cfg_opt_t cpu_temp_opts[] = {
 	CFG_STR("path", NULL, CFGF_NONE),
 	CFG_THRESHOLD(75, 60, "%temp"),
+	CFG_ITEM_COLORS,
 	CFG_INTERVAL,
 	CFG_END()
 };
@@ -75,49 +83,49 @@ static cfg_opt_t disk_opts[] = {
 	CFG_STR("threshold_type", "free" , CFGF_NONE), /* free|avail|used */
 	CFG_STR("threshold_unit", "%", CFGF_NONE), /* k|M|G|T|% */
 	CFG_MEASUREMENT_SYSTEM,
+	CFG_ITEM_COLORS,
 	CFG_INTERVAL,
 	CFG_END()
 };
 
 static cfg_opt_t network_link_opts[] = {
-        CFG_STR("format", "%title: %ip4 %ip6 %up", CFGF_NONE), /* link is operational */
-        CFG_STR("format_up", NULL, CFGF_NONE),
-        CFG_STR("format_down", NULL, CFGF_NONE),
-	CFG_COLOR_NORMAL,
-	CFG_COLOR_DEGRADED,
-	CFG_COLOR_BAD,
-        CFG_END()
+	CFG_STR("format", "%title: %ip4 %ip6 %up", CFGF_NONE), /* link is operational */
+	CFG_STR("format_up", NULL, CFGF_NONE),
+	CFG_STR("format_down", NULL, CFGF_NONE),
+	CFG_ITEM_COLORS,
+	CFG_END()
 };
 
 static cfg_opt_t network_wifi_opts[] = {
 	CFG_THRESHOLD(10, 30, "%title: %essid %strength%"),
-        CFG_STR("format_disconnected", NULL, CFGF_NONE),
+	CFG_ITEM_COLORS,
+	CFG_STR("format_disconnected", NULL, CFGF_NONE),
 	CFG_END()
 };
 
 static cfg_opt_t network_opts[] = {
-        CFG_STR_LIST("items", "{}", CFGF_NONE),
-        CFG_SEC("link", network_link_opts, CFGF_MULTI | CFGF_TITLE),
-        CFG_SEC("wifi", network_wifi_opts, CFGF_MULTI | CFGF_TITLE),
+	CFG_STR_LIST("items", "{}", CFGF_NONE),
+	CFG_SEC("link", network_link_opts, CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("wifi", network_wifi_opts, CFGF_MULTI | CFGF_TITLE),
 	CFG_MEASUREMENT_SYSTEM,
-        CFG_INTERVAL,
-        CFG_END()
+	CFG_INTERVAL,
+	CFG_END()
 };
 
 static cfg_opt_t process_opts[] = {
 	CFG_STR("pidfile", NULL, CFGF_NONE),
 	CFG_STR("format", "%title: %good", CFGF_NONE),
 	CFG_STR("format_bad", NULL, CFGF_NONE),
+	CFG_COLOR_NORMAL(NULL),
+	CFG_COLOR_BAD(NULL),
 	CFG_INTERVAL,
-	CFG_COLOR_NORMAL,
-	CFG_COLOR_BAD,
 	CFG_END()
 };
 
 static cfg_opt_t time_opts[] = { 
 	CFG_STR("format", "%F - %T", CFGF_NONE),
+	CFG_COLOR_NORMAL(NULL),
 	CFG_INTERVAL,
-	CFG_COLOR_NORMAL,
 	CFG_END()
 };
 
@@ -127,9 +135,9 @@ static cfg_opt_t volume_opts[] = {
 	CFG_STR("device", "default", CFGF_NONE),
 	CFG_STR("mixer", "Master", CFGF_NONE),
 	CFG_INT("index", 0, CFGF_NONE),
+	CFG_COLOR_NORMAL(NULL),
+	CFG_COLOR_DEGRADED(NULL),
 	CFG_INTERVAL,
-	CFG_COLOR_NORMAL,
-	CFG_COLOR_DEGRADED,
 	CFG_END()
 };
 

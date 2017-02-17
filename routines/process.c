@@ -23,7 +23,7 @@ void process_routine(cfg_t *config, struct text_t *text) {
 
 	CHOOSE_FMTCOL(
 			runs ? "format" : "format_bad",
-			runs ? "color_normal" : "color_bad");
+			runs ? COLOR_NORMAL : COLOR_BAD);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
