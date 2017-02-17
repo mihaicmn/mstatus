@@ -35,7 +35,7 @@ void cpu_usage_routine(cfg_t *config, struct text_t *text) {
 		die("could not read cpu usage\n");
 
 	const char *format;
-	CHOOSE_FMTCOL_BYTHRESHOLD(usage, ABOVE);
+	SET_FMTCOL_BYTHRESHOLD(usage, ABOVE);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

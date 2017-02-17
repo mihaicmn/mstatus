@@ -59,7 +59,7 @@ void volume_routine(cfg_t *config, struct text_t *text) {
 
 	const char *format;
 
-	CHOOSE_FMTCOL(
+	SET_FMTCOL(
 			volume.mute ? "format" : "format_muted",
 			volume.mute ? COLOR_NORMAL : COLOR_DEGRADED);
 

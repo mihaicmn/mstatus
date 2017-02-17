@@ -67,7 +67,7 @@ void disk_routine(cfg_t *config, struct text_t *text) {
 		die("invalid threshold_unit: %s\n", threshold_unit);
 
 	const char *format;
-	CHOOSE_FMTCOL_BYTHRESHOLD(level, comparison);
+	SET_FMTCOL_BYTHRESHOLD(level, comparison);
 
 	convert_auto(msystem, disk.free, &free);
 	convert_auto(msystem, disk.avail, &avail);

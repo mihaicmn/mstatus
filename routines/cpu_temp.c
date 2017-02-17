@@ -19,7 +19,7 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text) {
 		die("could not get cpu temp\n");
 
 	const char *format;
-	CHOOSE_FMTCOL_BYTHRESHOLD(temp, ABOVE);
+	SET_FMTCOL_BYTHRESHOLD(temp, ABOVE);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

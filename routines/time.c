@@ -10,7 +10,7 @@ void time_routine(cfg_t *config, struct text_t *text) {
 	time(&current);
 	localtime_r(&current, &tm);
 
-	CHOOSE_FMTCOL("format", COLOR_NORMAL);
+	SET_FMTCOL("format", COLOR_NORMAL);
 
 	text->cursor += strftime(text->content, text->capacity, format, &tm);
 }
