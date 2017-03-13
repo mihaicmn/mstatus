@@ -141,18 +141,27 @@ static cfg_opt_t volume_opts[] = {
 	CFG_END()
 };
 
+static cfg_opt_t brightness_opts[] = {
+	CFG_STR("format", "%brightness", CFGF_NONE),
+	CFG_STR("actual_brightness_path", NULL, CFGF_NONE),
+	CFG_STR("max_brightness_path", NULL, CFGF_NONE),
+	CFG_INTERVAL,
+	CFG_END()
+};
+
 static cfg_opt_t opts[] = {
-	CFG_SEC("general",	general_opts,	CFGF_NONE),
-	CFG_STR_LIST("items",	"{}",		CFGF_NONE),
-	CFG_SEC("battery",	battery_opts,	CFGF_NONE),
-	CFG_SEC("cpu_usage",	cpu_usage_opts,	CFGF_NONE),
-	CFG_SEC("cpu_load",	cpu_load_opts,	CFGF_NONE),
-	CFG_SEC("cpu_temp",	cpu_temp_opts,	CFGF_NONE),
-	CFG_SEC("disk",		disk_opts,	CFGF_MULTI | CFGF_TITLE),
-	CFG_SEC("network",	network_opts,	CFGF_NONE),
-	CFG_SEC("process",	process_opts,	CFGF_MULTI | CFGF_TITLE),
-	CFG_SEC("time",		time_opts,	CFGF_NONE),
-	CFG_SEC("volume",	volume_opts,	CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("general",	general_opts,		CFGF_NONE),
+	CFG_STR_LIST("items",	"{}",			CFGF_NONE),
+	CFG_SEC("battery",	battery_opts,		CFGF_NONE),
+	CFG_SEC("cpu_usage",	cpu_usage_opts,		CFGF_NONE),
+	CFG_SEC("cpu_load",	cpu_load_opts,		CFGF_NONE),
+	CFG_SEC("cpu_temp",	cpu_temp_opts,		CFGF_NONE),
+	CFG_SEC("disk",		disk_opts,		CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("network",	network_opts,		CFGF_NONE),
+	CFG_SEC("process",	process_opts,		CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("time",		time_opts,		CFGF_NONE),
+	CFG_SEC("volume",	volume_opts,		CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("brightness",	brightness_opts,	CFGF_MULTI),
 	CFG_END()
 };
 

@@ -27,6 +27,8 @@ static inline void item_init(struct item_t *item, const char *name) {
 		item->routine = &time_routine;
 	else if (STARTS_WITH("volume", name, 6))
 		item->routine = &volume_routine;
+	else if (STARTS_WITH("brightness", name, 10))
+		item->routine = &brightness_routine;
 	else
 		die("item_routine \"%s\" not found\n");
 }

@@ -13,6 +13,7 @@ void disk_routine(cfg_t *config, struct text_t *text);
 void process_routine(cfg_t *config, struct text_t *text);
 void time_routine(cfg_t *config, struct text_t *text);
 void volume_routine(cfg_t *config, struct text_t *text);
+void brightness_routine(cfg_t *config, struct text_t *text);
 
 void network_pre_routine(cfg_t *config, void **context);
 void network_post_routine(void **context);
