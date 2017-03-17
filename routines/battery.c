@@ -38,39 +38,39 @@ static int get_battery_info(const char *path, struct battery_t *battery) {
 		if (*cursor == '\n')
 			continue;
 
-		if (!STARTS_WITH("POWER_SUPPLY_", cursor, 13))
+		if (!STARTS_WITH("POWER_SUPPLY_", cursor))
 			continue;
 
 		cursor += 13; //consume 'POWER_SUPPLY_' sequence
 
-		if (STARTS_WITH("STATUS=", cursor, 7)) {
+		if (STARTS_WITH("STATUS=", cursor)) {
 			cursor += 7;
-			if (STARTS_WITH("Full", cursor, 4)) {
+			if (STARTS_WITH("Full", cursor)) {
 				cursor += 4;
 				battery->status = FULL;
-			} else if (STARTS_WITH("Charging", cursor, 8)) {
+			} else if (STARTS_WITH("Charging", cursor)) {
 				cursor += 8;
 				battery->status = CHARGING;
-			} else if (STARTS_WITH("Discharging", cursor, 11)) {
+			} else if (STARTS_WITH("Discharging", cursor)) {
 				cursor += 11;
 				battery->status = DISCHARGING;
 			} else {
 				cursor += 7; //FIXME
 				battery->status = UNKNOWN;
 			}
-//		} else if (STARTS_WITH("CHARGE_FULL_DESIGN=", cursor, 19)) {
+//		} else if (STARTS_WITH("CHARGE_FULL_DESIGN=", cursor)) {
 //			cursor += 19;
 //			charge_design = atoi(cursor);
-		} else if (STARTS_WITH("CHARGE_FULL=", cursor, 12)) {
+		} else if (STARTS_WITH("CHARGE_FULL=", cursor)) {
 			cursor += 12;
 			charge_real = atoi(cursor);
-		} else if (STARTS_WITH("CHARGE_NOW=", cursor, 11)) {
+		} else if (STARTS_WITH("CHARGE_NOW=", cursor)) {
 			cursor += 11;
 			charge_now = atoi(cursor);
-		} else if (STARTS_WITH("CURRENT_NOW=", cursor, 12)) {
+		} else if (STARTS_WITH("CURRENT_NOW=", cursor)) {
 			cursor += 12;
 			rate = atoi(cursor);
-		} else if (STARTS_WITH("VOLTAGE_NOW=", cursor, 12)) {
+		} else if (STARTS_WITH("VOLTAGE_NOW=", cursor)) {
 			cursor += 12;
 			voltage = atoi(cursor);
 		}
@@ -130,10 +130,10 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 
         FORMAT_WALK(format) {
                 FORMAT_PRE_RESOLVE;
-                FORMAT_RESOLVE("status", 6, "%d", battery.status);
-                FORMAT_RESOLVE("percentage", 10, "%.00f", battery.percentage);
-                FORMAT_RESOLVE("remaining", 9, "%02d:%02d", (int)battery.remaining, (int)(float)(battery.remaining * 60) / 60);
-                FORMAT_RESOLVE("consumption", 11, "%0.02fW", battery.consumption);
+                FORMAT_RESOLVE("status", "%d", battery.status);
+                FORMAT_RESOLVE("percentage", "%.00f", battery.percentage);
+                FORMAT_RESOLVE("remaining", "%02d:%02d", (int)battery.remaining, (int)(float)(battery.remaining * 60) / 60);
+                FORMAT_RESOLVE("consumption", "%0.02fW", battery.consumption);
 		FORMAT_POST_RESOLVE;
         }
 }

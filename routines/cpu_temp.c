@@ -23,7 +23,7 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text) {
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
-		FORMAT_RESOLVE("temp", 4, "%02d", temp);
+		FORMAT_RESOLVE("temp", "%02d", temp);
 		FORMAT_POST_RESOLVE;
 	}
 }

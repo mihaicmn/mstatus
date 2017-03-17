@@ -55,13 +55,13 @@ void disk_routine(cfg_t *config, struct text_t *text) {
 
 	if (EQUALS(threshold_unit, "%"))
 		level = bytes * disk.total / 100;
-	else if (STARTS_WITH(threshold_unit, "k", 1))
+	else if (STARTS_WITH(threshold_unit, "k"))
 		convert_to(msystem, bytes, 1, &level);
-	else if (STARTS_WITH(threshold_unit, "M", 1))
+	else if (STARTS_WITH(threshold_unit, "M"))
 		convert_to(msystem, bytes, 2, &level);
-	else if (STARTS_WITH(threshold_unit, "G", 1))
+	else if (STARTS_WITH(threshold_unit, "G"))
 		convert_to(msystem, bytes, 3, &level);
-	else if (STARTS_WITH(threshold_unit, "T", 1))
+	else if (STARTS_WITH(threshold_unit, "T"))
 		convert_to(msystem, bytes, 4, &level);
 	else
 		die("invalid threshold_unit: %s\n", threshold_unit);
@@ -76,10 +76,10 @@ void disk_routine(cfg_t *config, struct text_t *text) {
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
-		FORMAT_RESOLVE("free", 4, "%.1f%s", free.value, free.unit);
-		FORMAT_RESOLVE("avail", 5, "%.1f%s", avail.value, avail.unit);
-		FORMAT_RESOLVE("used", 4, "%.1f%s", used.value, used.unit);
-		FORMAT_RESOLVE("total", 5, "%.1f%s", total.value, total.unit);
+		FORMAT_RESOLVE("free", "%.1f%s", free.value, free.unit);
+		FORMAT_RESOLVE("avail", "%.1f%s", avail.value, avail.unit);
+		FORMAT_RESOLVE("used", "%.1f%s", used.value, used.unit);
+		FORMAT_RESOLVE("total", "%.1f%s", total.value, total.unit);
 		FORMAT_POST_RESOLVE;
 	}
 }

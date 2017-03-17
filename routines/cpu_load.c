@@ -14,9 +14,9 @@ void cpu_load_routine(cfg_t *config, struct text_t *text) {
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
-		FORMAT_RESOLVE("1min", 4, "%.2f", loadavg[0]);
-		FORMAT_RESOLVE("5min", 4, "%.2f", loadavg[1]);
-		FORMAT_RESOLVE("15min", 5, "%.2f", loadavg[2]);
+		FORMAT_RESOLVE("1min", "%.2f", loadavg[0]);
+		FORMAT_RESOLVE("5min", "%.2f", loadavg[1]);
+		FORMAT_RESOLVE("15min", "%.2f", loadavg[2]);
 		FORMAT_POST_RESOLVE;
 	}
 }

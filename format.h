@@ -14,10 +14,10 @@
 		continue;				\
 	}
 
-#define FORMAT_RESOLVE(variable, len, pattern, ...)	\
-	if (STARTS_WITH(c + 1, variable, len)) {	\
+#define FORMAT_RESOLVE(variable, pattern, ...)	\
+	if (STARTS_WITH(variable, c + 1)) {	\
 		text_printf(text, pattern, __VA_ARGS__);\
-		c += len;				\
+		c += strlen(variable);			\
 		continue;				\
 	}
 

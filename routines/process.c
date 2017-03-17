@@ -27,8 +27,8 @@ void process_routine(cfg_t *config, struct text_t *text) {
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
-		FORMAT_RESOLVE("title", 5, "%s", cfg_title(config));
-		FORMAT_RESOLVE("good", 4, "%s", runs ? "yes" : "no");
+		FORMAT_RESOLVE("title", "%s", cfg_title(config));
+		FORMAT_RESOLVE("good", "%s", runs ? "yes" : "no");
 		FORMAT_POST_RESOLVE;
 	}
 }

@@ -193,10 +193,10 @@ void link_subroutine(cfg_t *config, void *context, struct text_t *text) {
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
-		FORMAT_RESOLVE("title", 5, "%s", name);
-		FORMAT_RESOLVE("ip4", 3, "%s", link.ip4);
-		FORMAT_RESOLVE("ip6", 3, "%s", link.ip6);
-		FORMAT_RESOLVE("state", 5, "%s", state_valueof(link.state));
+		FORMAT_RESOLVE("title", "%s", name);
+		FORMAT_RESOLVE("ip4", "%s", link.ip4);
+		FORMAT_RESOLVE("ip6", "%s", link.ip6);
+		FORMAT_RESOLVE("state", "%s", state_valueof(link.state));
 		FORMAT_POST_RESOLVE;
 	}
 }
@@ -350,12 +350,12 @@ void wifi_subroutine(cfg_t *config, void *context, struct text_t *text) {
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
-		FORMAT_RESOLVE("title", 5, "%s", name);
-		FORMAT_RESOLVE("essid", 5, "%s", wifi.essid);
-		FORMAT_RESOLVE("strength", 8, "%.0f", wifi.strength);
-		FORMAT_RESOLVE("signal", 6, "%d", wifi.signal);
-		FORMAT_RESOLVE("rxrate", 6, "%3.0f%s", wifi.rx_rate.value, wifi.rx_rate.unit);
-		FORMAT_RESOLVE("txrate", 6, "%3.0f%s", wifi.tx_rate.value, wifi.tx_rate.unit);
+		FORMAT_RESOLVE("title", "%s", name);
+		FORMAT_RESOLVE("essid", "%s", wifi.essid);
+		FORMAT_RESOLVE("strength", "%.0f", wifi.strength);
+		FORMAT_RESOLVE("signal", "%d", wifi.signal);
+		FORMAT_RESOLVE("rxrate", "%3.0f%s", wifi.rx_rate.value, wifi.rx_rate.unit);
+		FORMAT_RESOLVE("txrate", "%3.0f%s", wifi.tx_rate.value, wifi.tx_rate.unit);
 		FORMAT_POST_RESOLVE;
 	}
 }
