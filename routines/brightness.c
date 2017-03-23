@@ -20,7 +20,7 @@ void brightness_routine(cfg_t *config, struct text_t *text) {
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
-		FORMAT_RESOLVE("brightness", "%.0f", brightness);
+		FORMAT_RESOLVE("brightness", "%02.0f", brightness);
 		FORMAT_POST_RESOLVE;
 	}
 }
