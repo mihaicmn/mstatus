@@ -51,7 +51,7 @@ close_mixer:
 }
 
 
-void volume_routine(cfg_t *config, struct text_t *text) {
+void alsa_routine(cfg_t *config, struct text_t *text) {
 	struct volume_t volume;
 
 	if (get_volume(cfg_getstr(config, "device"), cfg_getstr(config, "mixer"), cfg_getint(config, "index"), &volume) < 0)

@@ -25,8 +25,8 @@ static inline void item_init(struct item_t *item, const char *name) {
 		item->routine = &process_routine;
 	else if (STARTS_WITH("time", name))
 		item->routine = &time_routine;
-	else if (STARTS_WITH("volume", name))
-		item->routine = &volume_routine;
+	else if (STARTS_WITH("alsa", name))
+		item->routine = &alsa_routine;
 	else if (STARTS_WITH("brightness", name))
 		item->routine = &brightness_routine;
 	else

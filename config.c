@@ -129,7 +129,7 @@ static cfg_opt_t time_opts[] = {
 	CFG_END()
 };
 
-static cfg_opt_t volume_opts[] = {
+static cfg_opt_t alsa_opts[] = {
 	CFG_STR("format", "%volume", CFGF_NONE),
 	CFG_STR("format_muted", "%volume", CFGF_NONE),
 	CFG_STR("device", "default", CFGF_NONE),
@@ -160,7 +160,7 @@ static cfg_opt_t opts[] = {
 	CFG_SEC("network",	network_opts,		CFGF_NONE),
 	CFG_SEC("process",	process_opts,		CFGF_MULTI | CFGF_TITLE),
 	CFG_SEC("time",		time_opts,		CFGF_NONE),
-	CFG_SEC("volume",	volume_opts,		CFGF_MULTI | CFGF_TITLE),
+	CFG_SEC("alsa",		alsa_opts,		CFGF_MULTI | CFGF_TITLE),
 	CFG_SEC("brightness",	brightness_opts,	CFGF_MULTI),
 	CFG_END()
 };

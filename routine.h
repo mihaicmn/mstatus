@@ -12,7 +12,7 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text);
 void disk_routine(cfg_t *config, struct text_t *text);
 void process_routine(cfg_t *config, struct text_t *text);
 void time_routine(cfg_t *config, struct text_t *text);
-void volume_routine(cfg_t *config, struct text_t *text);
+void alsa_routine(cfg_t *config, struct text_t *text);
 void brightness_routine(cfg_t *config, struct text_t *text);
 
 void network_pre_routine(cfg_t *config, void **context);
