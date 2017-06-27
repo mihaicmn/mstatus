@@ -145,6 +145,7 @@ static cfg_opt_t brightness_opts[] = {
 	CFG_STR("format", "%brightness", CFGF_NONE),
 	CFG_STR("actual_brightness_path", NULL, CFGF_NONE),
 	CFG_STR("max_brightness_path", NULL, CFGF_NONE),
+	CFG_COLOR_NORMAL(NULL),
 	CFG_INTERVAL,
 	CFG_END()
 };
