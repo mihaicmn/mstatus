@@ -10,9 +10,11 @@ static int get_cpu_temp(const char *path, int *result) {
 }
 
 void cpu_temp_routine(cfg_t *config, struct text_t *text) {
-	const char *path = cfg_getstr(config, "path");
-	if (path == NULL)
-		path = "/sys/class/thermal/thermal_zone0/temp";
+	const char *glob = cfg_getstr(config, "path");
+
+	char path[512];
+	if (file_expand(glob, path) != 0)
+		die("could not expand glob %s\n", glob);
 
 	int temp;
 	if (get_cpu_temp(path, &temp) < 0)

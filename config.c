@@ -71,7 +71,7 @@ static cfg_opt_t cpu_load_opts[] = {
 };
 
 static cfg_opt_t cpu_temp_opts[] = {
-	CFG_STR("path", NULL, CFGF_NONE),
+	CFG_STR("path", "/sys/class/thermal/thernal_zone0/temp", CFGF_NONE),
 	CFG_THRESHOLD(75, 60, "%temp"),
 	CFG_ITEM_COLORS,
 	CFG_INTERVAL,
