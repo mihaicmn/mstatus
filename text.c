@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "text.h"
 #include "util.h"
@@ -33,4 +34,18 @@ inline void text_putnull(struct text_t *text) {
 
 inline void text_reset(struct text_t *text) {
 	text->cursor = text->content;
+}
+
+inline void text_error(struct text_t *text, const char *msg) {
+	strncpy(text->cursor, msg, text->capacity);
+	text->cursor += strlen(msg); // TODO use min(capacity, strlen(msg))
+	text->color = "#FF0000";
+}
+
+inline void text_errorf(struct text_t *text, const char *format, ...) {
+	va_list args;
+	va_start(args, format);
+	text->cursor += vsnprintf(text->cursor, text->capacity, format, args);
+	va_end(args);
+	text->color = "#FF0000";
 }

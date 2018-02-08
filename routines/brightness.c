@@ -13,10 +13,17 @@ static float get_brightness(const char *actual_brightness_path, const char *max_
 }
 
 void brightness_routine(cfg_t *config, struct text_t *text) {
-	float brightness = get_brightness(cfg_getstr(config, "actual_brightness_path"), cfg_getstr(config, "max_brightness_path"));
-	const char *format;
+	const char *abp = cfg_getstr(config, "actual_brightness_path");
+	const char *mbp = cfg_getstr(config, "max_brightness_path");
 
-	SET_FMTCOL("format", COLOR_NORMAL);
+	const float brightness = get_brightness(abp, mbp);
+	if (brightness < 0) {
+		text_error(text, "could not get brightness");
+		return;
+	}
+
+	text->color = color_load(config, COLOR_NORMAL);
+	const char *format = format_load(config, "format");
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

@@ -24,14 +24,14 @@ void i3bar_end() {
 	fflush(stdout);
 }
 
-void i3bar_print(const struct text_t *t) {
-	if (append_separator)
+void i3bar_print(const char *text, const char *color, const bool separator) {
+	if (separator)
 		PRINT_JSON_SEPARATOR;
 
-	printf("{\"full_text\":\"%s\"", t->content);
+	printf("{\"full_text\":\"%s\"", text);
 
-	if (use_colors && t->color)
-		printf(",\"color\":\"%s\"", t->color);
+	if (color)
+		printf(",\"color\":\"%s\"", color);
 
 	printf("}");
 }

@@ -27,15 +27,20 @@ static void print_color(const char *color) {
 	printf("\033[3%d;1m", (r << 2) | (g << 1) | b);
 }
 
-void terminal_print(const struct text_t *text) {
-	if (append_separator)
+void terminal_print(const char *text, const char *color, const bool separator) {
+	if (separator)
 		printf(" | ");
 
-	if (use_colors && text->color)
-		print_color(text->color);
+	if (color != NULL)
+		print_color(color);
 
-	printf("%s", text->content);
+	printf("%s", text);
 
-	if (use_colors && text->color)
+	if (color != NULL)
 		printf("\033[0m");
+}
+
+void terminal_end() {
+	printf("\n");
+	fflush(stdout);
 }

@@ -1,9 +1,9 @@
 #include "config.h"
 #include "text.h"
 
-const char *color_normal;
-const char *color_degraded;
-const char *color_bad;
+char *color_normal;
+char *color_degraded;
+char *color_bad;
 
 void output_init(cfg_t *config);
 void output_dismiss();

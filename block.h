@@ -33,7 +33,9 @@ struct block_t {
 	} content;
 };
 
+typedef void (*render_t)(const struct text_t *text);
+
 void block_init(struct block_t *block, cfg_t *config);
-void block_clear(struct block_t *block);
-void block_refresh(struct block_t *block);
-void block_print(struct block_t *block);
+void block_dismiss(struct block_t *block);
+void block_reload(struct block_t *block);
+void block_render(struct block_t *block, render_t r);

@@ -18,12 +18,10 @@ static bool process_runs(const char *pidfile) {
 }
 
 void process_routine(cfg_t *config, struct text_t *text) {
-	bool runs = process_runs(cfg_getstr(config, "pidfile"));
-	const char *format;
+	const bool runs = process_runs(cfg_getstr(config, "pidfile"));
 
-	SET_FMTCOL(
-			runs ? "format" : "format_bad",
-			runs ? COLOR_NORMAL : COLOR_BAD);
+	text->color = color_load(config, runs ? COLOR_NORMAL : COLOR_BAD);
+	const char *format = format_load(config, runs ? "format" : "format_bad");
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

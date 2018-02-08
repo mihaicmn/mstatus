@@ -7,15 +7,13 @@
 #include "config.h"
 #include "util.h"
 
-#define SIGACTION(signal) if (sigaction(signal, &action, NULL) < 0) die("cannot register signal handler\n")
-
 static void signal_handler(int signal) {
 	switch(signal) {
 	case SIGUSR1:
 		bar_refresh();
 		break;
 	default:
-		bar_break();
+		bar_kill();
 		break;
 	}
 }
@@ -24,16 +22,11 @@ static void register_signals() {
 	struct sigaction action;
 	memset(&action, 0, sizeof(struct sigaction));
 	action.sa_handler = &signal_handler;
-	SIGACTION(SIGTERM);
-	SIGACTION(SIGUSR1);
-}
 
-static void select_path(const char **paths, const int len, char *result) {
-	int i;
-	for (i = 0; i < len; i++) {
-		if (paths[i] != NULL && file_expand(paths[i], result) == 0)
-			break;
-	}
+	if (sigaction(SIGTERM, &action, NULL) < 0)
+		die("cannot register SIGTERM handler\n");
+	if (sigaction(SIGUSR1, &action, NULL) < 0)
+		die("cannot register SIGUSR1 handler\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -65,13 +58,14 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	select_path(paths, 9, path);
-	config_load(path);
+	for (int i = 0; i < 9; i++) {
+		if (paths[i] != NULL && file_expand(paths[i], path) == 0)
+			break;
+	}
 
-	bar_init();
+	config_load(path);
 	register_signals();
 	bar_loop();
-	bar_dismiss();
 	config_unload();
 
 	return 0;

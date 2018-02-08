@@ -1,11 +1,9 @@
 #include <stdio.h>
 
 #include "block.h"
-#include "output.h" //TODO shouldn't depend on output
 #include "strings.h"
 #include "util.h"
 
-#define FOR_GROUP int i; for (i = 0; i < group->sub_count; i++)
 #define TEXT_LENGTH 128
 
 static inline void item_init(struct item_t *item, const char *name) {
@@ -49,7 +47,7 @@ static inline void group_init(struct group_t *group, cfg_t *config, const char *
 	group->sub_texts = smalloc(sub_count * sizeof(struct text_t));
 	group->sub_routines = smalloc(sub_count * sizeof(subroutine_t));
 
-	FOR_GROUP {
+	for (int i = 0; i < group->sub_count; i++) {
 		sub_config = config_get_sub(config, i);
 		group->sub_configs[i] = sub_config;
 		text_init(group->sub_texts + i, TEXT_LENGTH);
@@ -65,26 +63,26 @@ static inline void group_init(struct group_t *group, cfg_t *config, const char *
 	}
 }
 
-static inline void item_clear(struct item_t *item) {
+static inline void item_dismiss(struct item_t *item) {
 	text_dismiss(&item->text);
 }
 
-static inline void group_clear(struct group_t *group) {
-	FOR_GROUP {
+static inline void group_dismiss(struct group_t *group) {
+	for (int i = 0; i < group->sub_count; i++) {
 		text_dismiss(group->sub_texts + i);
 	}
 }
 
-static inline void item_refresh(struct item_t *item, cfg_t *config) {
+static inline void item_reload(struct item_t *item, cfg_t *config) {
 	text_reset(&item->text);
 	item->routine(config, &item->text);
 	text_putnull(&item->text);
 }
 
-static inline void group_refresh(struct group_t *group, cfg_t *config) {
+static inline void group_reload(struct group_t *group, cfg_t *config) {
 	group->pre_routine(config, &group->context);
 
-	FOR_GROUP {
+	for (int i = 0; i < group->sub_count; i++) {
 		text_reset(group->sub_texts + i);
 		group->sub_routines[i](group->sub_configs[i], group->context, group->sub_texts + i);
 		text_putnull(group->sub_texts + i);
@@ -93,20 +91,17 @@ static inline void group_refresh(struct group_t *group, cfg_t *config) {
 	group->post_routine(&group->context);
 }
 
-static inline void item_print(struct item_t *item) {
-	output_print(&item->text);
+static inline void item_render(struct item_t *item, render_t render) {
+	render(&item->text);
 }
 
-static inline void group_print(struct group_t *group) {
-	FOR_GROUP {
-		output_print(group->sub_texts + i);
+static inline void group_render(struct group_t *group, render_t render) {
+	for (int i = 0; i < group->sub_count; i++) {
+		render(group->sub_texts + i);
 	}
 }
 
 void block_init(struct block_t *block, cfg_t *config) {
-	block->config = config;
-	block->interval = cfg_getint(config, "interval");
-
 	const char *name = cfg_name(config);
 	if (STARTS_WITH(name, "network")) {
 		block->type = GROUP;
@@ -115,25 +110,28 @@ void block_init(struct block_t *block, cfg_t *config) {
 		block->type = ITEM;
 		item_init(&block->content.item, name);
 	}
+
+	block->config = config;
+	block->interval = cfg_getint(config, "interval");
 }
 
-void block_clear(struct block_t *block) {
+void block_dismiss(struct block_t *block) {
 	if (block->type == GROUP)
-		group_clear(&block->content.group);
+		group_dismiss(&block->content.group);
 	else
-		item_clear(&block->content.item);
+		item_dismiss(&block->content.item);
 }
 
-void block_refresh(struct block_t *block) {
+void block_reload(struct block_t *block) {
 	if (block->type == GROUP)
-		group_refresh(&block->content.group, block->config);
+		group_reload(&block->content.group, block->config);
 	else
-		item_refresh(&block->content.item, block->config);
+		item_reload(&block->content.item, block->config);
 }
 
-void block_print(struct block_t *block) {
+void block_render(struct block_t *block, render_t render) {
 	if (block->type == GROUP)
-		group_print(&block->content.group);
+		group_render(&block->content.group, render);
 	else
-		item_print(&block->content.item);
+		item_render(&block->content.item, render);
 }

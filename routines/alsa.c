@@ -52,16 +52,18 @@ close_mixer:
 
 
 void alsa_routine(cfg_t *config, struct text_t *text) {
+	const char *cdevice = cfg_getstr(config, "device");
+	const char *cmixer = cfg_getstr(config, "mixer");
+	const int cindex = cfg_getint(config, "index");
 	struct volume_t volume;
 
-	if (get_volume(cfg_getstr(config, "device"), cfg_getstr(config, "mixer"), cfg_getint(config, "index"), &volume) < 0)
-		die("could not get volume info\n");
+	if (get_volume(cdevice, cmixer, cindex, &volume) > 0) {
+		text_error(text, "could not get volume info");
+		return;
+	}
 
-	const char *format;
-
-	SET_FMTCOL(
-			volume.mute ? "format" : "format_muted",
-			volume.mute ? COLOR_NORMAL : COLOR_DEGRADED);
+	text->color = color_load(config, volume.mute ? COLOR_NORMAL : COLOR_DEGRADED);
+	const char *format = format_load(config, volume.mute ? "format" : "format_muted");
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

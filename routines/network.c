@@ -22,6 +22,7 @@ struct network_t {
 	enum msystem_t msystem;
 	struct nl_cache *links;
 	struct nl_cache *addrs;
+	char *error;
 };
 
 enum state_t {
@@ -61,67 +62,89 @@ static inline const char *state_valueof(const enum state_t state) {
 	}
 }
 
-static inline struct nl_sock *snl_connect(int protocol) {
-	struct nl_sock *socket;
+static int snl_connect(int protocol, struct nl_sock **socket) {
+	if ((*socket = nl_socket_alloc()) == NULL) {
+		return -1;
+	}
 
-	if ((socket = nl_socket_alloc()) == NULL)
-		die("cannot alloc nl_socket\n");
+	if (nl_connect(*socket, protocol) < 0) {
+		nl_socket_free(*socket);
+		return -2;
+	}
 
-	if (nl_connect(socket, protocol) < 0)
-		die("cannot connect socket\n");
-
-	return socket;
+	return 0;
 }
 
-static inline struct nl_msg *sgenl_message(const int family, const uint8_t cmd, const int ifindex) {
+static int sgenl_send(struct nl_sock *socket, const int family, const uint8_t cmd, const int ifindex, nl_recvmsg_msg_cb_t cb, void *arg) {
+	if (nl_socket_modify_cb(socket, NL_CB_VALID, NL_CB_CUSTOM, cb, arg) < 0) {
+		return -1;
+	}
+
 	struct nl_msg *msg;
+	if ((msg = nlmsg_alloc()) == NULL) {
+		return -2;
+	}
 
-	if ((msg = nlmsg_alloc()) == NULL)
-		die("cannot allocate new message\n");
+	if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, family, 0, NLM_F_DUMP, cmd, 0)) {
+		nlmsg_free(msg);
+		return -3;
+	}
 
-	if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, family, 0, NLM_F_DUMP, cmd, 0))
-		die("cannot set cmd within message\n");
+	if (nla_put_u32(msg, NL80211_ATTR_IFINDEX, ifindex) < 0) {
+		nlmsg_free(msg);
+		return -4;
+	}
 
-	if (nla_put_u32(msg, NL80211_ATTR_IFINDEX, ifindex) < 0)
-		die("cannot set NL80211_ATTR_IFINDEX\n");
+	if (nl_send_auto(socket, msg) < 0) {
+		nlmsg_free(msg);
+		return -5;
+	}
 
-	return msg;
+	if (nl_wait_for_ack(socket) < 0) {
+		nlmsg_free(msg);
+		return -6;
 
-}
+	}
 
-static inline void sgenl_send(struct nl_sock *socket, struct nl_msg *msg, nl_recvmsg_msg_cb_t cb, void *arg) {
-	if (nl_socket_modify_cb(socket, NL_CB_VALID, NL_CB_CUSTOM, cb, arg) < 0)
-		die("cannot set callback\n");
-
-	if (nl_send_auto(socket, msg) < 0)
-		die("cannot to send message\n");
-
-	if (nl_wait_for_ack(socket) < 0)
-		die("cannot wait for acknowledge\n");
+	nlmsg_free(msg);
+	return 0;
 }
 
 /*---	NETWORK GROUP	---*/
 void network_pre_routine(cfg_t *config, void **context) {
 	struct network_t *network = smalloc(sizeof(struct network_t));
-	struct nl_sock *socket = snl_connect(NETLINK_ROUTE);
-
-	if (rtnl_link_alloc_cache(socket, AF_UNSPEC, &network->links) < 0)
-		die("cannot alloc link_cache\n");
-
-	if (rtnl_addr_alloc_cache(socket, &network->addrs) < 0)
-		die("cannot alloc addr_cache\n");
-
-	nl_socket_free(socket);
-
 	network->msystem = system_valueof(cfg_getstr(config, "measurement_system"));
-
+	network->links = NULL;
+	network->addrs = NULL;
+	network->error = NULL;
 	*context = network;
+
+	struct nl_sock *socket;
+	if (snl_connect(NETLINK_ROUTE, &socket) < 0) {
+		network->error = "cannot connect socket";
+		return;
+	}
+
+	if (rtnl_link_alloc_cache(socket, AF_UNSPEC, &network->links) < 0) {
+		network->error = "cannot alloc link_cache";
+		goto free_socket;
+	}
+
+	if (rtnl_addr_alloc_cache(socket, &network->addrs) < 0) {
+		network->error = "cannot alloc addr_cache";
+		goto free_socket;
+	}
+
+free_socket:
+	nl_socket_free(socket);
 }
 
 void network_post_routine(void **context) {
 	struct network_t *network = *context;
-	nl_cache_free(network->links);
-	nl_cache_free(network->addrs);
+	if (network->links != NULL)
+		nl_cache_free(network->links);
+	if (network->addrs != NULL)
+		nl_cache_free(network->addrs);
 	sfree(network);
 }
 
@@ -176,20 +199,33 @@ static inline int link_fetch(struct network_t *network, const char *name, struct
 void link_subroutine(cfg_t *config, void *context, struct text_t *text) {
 	const char *name = cfg_title(config);
 	struct network_t *network = context;
-	struct link_t link;
 
+	if (network->error != NULL) {
+		text_error(text, network->error);
+		return;
+	}
+
+	struct link_t link;
+	enum color_t color;
 	const char *format;
 	if (link_fetch(network, name, &link) < 0) {
-		SET_FMTCOL("format_down", COLOR_BAD);
+		color = COLOR_BAD;
+		format = "format_down";
 	} else {
 		if (link.ip4[0] && link.ip6[0]) {
-			SET_FMTCOL("format", COLOR_NORMAL);
+			color = COLOR_NORMAL;
+			format = "format";
 		} else if (link.state == OPERATIONAL || link.state == UP) {
-			SET_FMTCOL("format_up", COLOR_DEGRADED);
+			color = COLOR_DEGRADED;
+			format = "format_up";
 		} else /*if (link.state == DOWN)*/ {
-			SET_FMTCOL("format_down", COLOR_BAD);
+			color = COLOR_BAD;
+			format = "format_down";
 		}
 	}
+
+	text->color = color_load(config, color);
+	format = format_load(config, format);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
@@ -311,23 +347,29 @@ static int handler_get_station(struct nl_msg *msg, void *arg) {
 static inline int wifi_fetch(struct network_t *network, const char *name, struct wifi_t *wifi) {
 	struct rtnl_link *rtlink = rtnl_link_get_by_name(network->links, name);
 
-	if (rtlink == NULL)
+	if (rtlink == NULL) {
 		return -1;
+	}
 
 	wifi->index = rtnl_link_get_ifindex(rtlink);
 
 	rtnl_link_put(rtlink);
 
-	struct nl_sock *socket = snl_connect(NETLINK_GENERIC);
+	struct nl_sock *socket;
+	if (snl_connect(NETLINK_GENERIC, &socket) < 0) {
+		return -2;
+	}
+
 	const int family = genl_ctrl_resolve(socket, "nl80211");
+	if (sgenl_send(socket, family, NL80211_CMD_GET_SCAN, wifi->index, &handler_get_scan, wifi) < 0) {
+		nl_socket_free(socket);
+		return -3;
+	}
 
-	struct nl_msg *msg = sgenl_message(family, NL80211_CMD_GET_SCAN, wifi->index);
-	sgenl_send(socket, msg, &handler_get_scan, wifi);
-	nlmsg_free(msg);
-
-	msg = sgenl_message(family, NL80211_CMD_GET_STATION, wifi->index);
-	sgenl_send(socket, msg, &handler_get_station, wifi);
-	nlmsg_free(msg);
+	if (sgenl_send(socket, family, NL80211_CMD_GET_STATION, wifi->index, &handler_get_station, wifi) < 0) {
+		nl_socket_free(socket);
+		return -4;
+	}
 
 	nl_socket_free(socket);
 	return 0;
@@ -336,17 +378,28 @@ static inline int wifi_fetch(struct network_t *network, const char *name, struct
 void wifi_subroutine(cfg_t *config, void *context, struct text_t *text) {
 	const char *name = cfg_title(config);
 	struct network_t *network = context;
-	struct wifi_t wifi;
 
+	if (network->error != NULL) {
+		text_error(text, network->error);
+		return;
+	}
+
+	struct wifi_t wifi;
 	memset(&wifi, 0, sizeof(struct wifi_t));
 	wifi.msystem = network->msystem;
 
+	enum color_t color;
 	const char *format;
 	if (wifi_fetch(network, name, &wifi) < 0 || !wifi.essid[0]) {
-		SET_FMTCOL("format_disconnected", COLOR_BAD);
+		color = COLOR_BAD;
+		format = "format_disconnected";
 	} else {
-		SET_FMTCOL_BYTHRESHOLD(wifi.strength, BELOW);
+		color = color_by_threshold(config, wifi.strength, BELOW);
+		format = format_by_threshold(config, wifi.strength, BELOW);
 	}
+
+	text->color = color_load(config, color);
+	format = format_load(config, format);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

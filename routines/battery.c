@@ -130,33 +130,42 @@ close_file:
 
 void battery_routine(cfg_t *config, struct text_t *text) {
 	struct battery_t battery;
-	const char *format;
 	const char *threshold_type;
 
-	if (get_battery_info(cfg_getstr(config, "path"), &battery) < 0)
-		die("could not get battery info\n");
+	if (get_battery_info(cfg_getstr(config, "path"), &battery) < 0) {
+		text_error(text, "could not get battery info");
+		return;
+	}
 
+	enum color_t color = COLOR_NORMAL;
+	const char *format = "format";
 	switch (battery.status) {
 	case FULL:
-		SET_FMTCOL("format_full", COLOR_NORMAL);
+		format = "format_full";
 		break;
 	case CHARGING:
-		SET_FMTCOL("format_charging", COLOR_NORMAL);
+		format = "format_charging";
 		break;
 	case DISCHARGING:
 		threshold_type = cfg_getstr(config, "threshold_type");
 		if (EQUALS(threshold_type, "percentage")) {
-			SET_FMTCOL_BYTHRESHOLD_FALLBACK(battery.percentage, BELOW, "format_discharging");
+			color = color_by_threshold(config, battery.percentage, BELOW);
+			format = format_by_threshold(config, battery.percentage, BELOW);
 		} else if (EQUALS(threshold_type, "minutes")) {
-			SET_FMTCOL_BYTHRESHOLD_FALLBACK(battery.remaining / 60, BELOW, "format_discharging");
-		} else {
-			SET_FMTCOL("format_discharging", COLOR_NORMAL);
+			color = color_by_threshold(config, battery.remaining / 60, BELOW);
+			format = format_by_threshold(config, battery.remaining / 60, BELOW);
+		}
+		if (EQUALS(format, "format")) {
+			format = "format_discharging";
 		}
 		break;
 	case UNKNOWN:
-		SET_FMTCOL("format_unknown", COLOR_NORMAL);
+		format = "format_unknown";
 		break;
 	}
+
+	text->color = color_load(config, color);
+	format = format_load(config, format);
 
         FORMAT_WALK(format) {
                 FORMAT_PRE_RESOLVE;

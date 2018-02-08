@@ -24,33 +24,21 @@
 #define FORMAT_POST_RESOLVE				\
 	text_putc(text, '%')
 
-
-#define SET_FMTCOL(fmtkey, colkey)			\
-	format = format_load(config, fmtkey);		\
-	text->color = color_load(config, colkey)
-
-#define SET_FMTCOL_BYTHRESHOLD(value, comp)						\
-	format = format_choose_by_threshold(config, value, comp, "format");		\
-	text->color = color_choose_by_threshold(config, value, comp)
-
-#define SET_FMTCOL_BYTHRESHOLD_FALLBACK(value, comp, fallback)				\
-	format = format_choose_by_threshold(config, value, comp, fallback);		\
-	text->color = color_choose_by_threshold(config, value, comp)
-
-
-enum comp_t {
-	ABOVE,
-	BELOW
-};
-
 enum color_t {
 	COLOR_NORMAL,
 	COLOR_DEGRADED,
 	COLOR_BAD
 };
 
-const char *color_load(cfg_t *config, enum color_t color);
-const char *color_choose_by_threshold(cfg_t *config, const double value, enum comp_t comp);
+enum comp_t {
+	ABOVE,
+	BELOW
+};
 
-const char *format_load(cfg_t *config, const char *fmtkey);
-const char *format_choose_by_threshold(cfg_t *confg, const double value, enum comp_t comp, const char *fallback_fmtkey);
+const char *color_load(cfg_t *config, enum color_t color);
+const char *format_load(cfg_t *config, const char *format);
+const char *color_load_threshold(cfg_t *config, const double value, enum comp_t comp);
+const char *format_load_threshold(cfg_t *config, const double value, enum comp_t comp);
+
+enum color_t color_by_threshold(cfg_t *config, const double value, enum comp_t comp);
+const char *format_by_threshold(cfg_t *config, const double value, enum comp_t comp);

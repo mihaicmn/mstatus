@@ -12,12 +12,6 @@
 #define MUTEX_LOCK if (pthread_mutex_lock(&mutex) < 0) die("could not lock mutex\n")
 #define MUTEX_UNLOCK if (pthread_mutex_unlock(&mutex) < 0) die("could not unlock mutex\n")
 
-#define CONDITION_INIT(condition) if (pthread_cond_init(condition, NULL) < 0) die("could not init cond\n")
-#define CONDITION_DSTR(condition) if (pthread_cond_destroy(condition) < 0) die("could not destroy cond\n")
-#define CONDITION_SIGNAL(condition) if (pthread_cond_signal(condition) < 0) die("could not signal condition\n")
-
-#define FOREACH_BLOCK struct block_t *block; int i; for (i = 0, block = blocks; i < block_count; i++, block++)
-
 static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t update_cond;
@@ -38,85 +32,66 @@ static inline int greatest_common_divisor(int x, int y) {
 }
 
 static void *start_polling(void *arg) {
-	int sleeping_duration = 0, rc = 0;
-	bool should_trigger_update;
+	int i, sleep = 0, rc = 0;
+	bool update;
 	struct timespec time;
+	struct block_t *b;
 
 	MUTEX_LOCK;
 
 	while (looping) {
-		FOREACH_BLOCK {
-			if (rc != ETIMEDOUT || sleeping_duration % block->interval == 0) {
-				block_refresh(block);
-				should_trigger_update = true;
+		for (i = 0, b = blocks; i < block_count; i++, b++) {
+			if (rc != ETIMEDOUT || sleep % b->interval == 0) {
+				block_reload(b);
+				update = true;
 			}
 		}
-
-		if (should_trigger_update)
-			CONDITION_SIGNAL(&update_cond);
 
 		clock_gettime(CLOCK_REALTIME, &time);
 		time.tv_sec += sleeping_period;
 
+		if (update && pthread_cond_signal(&update_cond) < 0)
+			die("could not signal condition\n");
+
 		if ((rc = pthread_cond_timedwait(&sleep_cond, &mutex, &time)) < 0)
 			die("could not wait on condition\n");
 
-		sleeping_duration += sleeping_period;
-		sleeping_duration %= sleeping_cycle;
-		should_trigger_update = false;
+		sleep += sleeping_period;
+		sleep %= sleeping_cycle;
+		update = false;
 	}
 
 	MUTEX_UNLOCK;
 	return NULL;
 }
 
-void bar_init() {
+void bar_loop() {
 	block_count = config_get_block_count();
 	blocks = smalloc(block_count * sizeof(struct block_t));
 
 	cfg_t *general = config_get_general();
-	const int general_interval = cfg_getint(general, "interval");
 	output_init(general);
 
-	FOREACH_BLOCK {
-		block_init(block, config_get_block(i));
-		if (block->interval < 1)
-			block->interval = general_interval;
-	}
+	int i;
+	struct block_t *b;
 
-	sleeping_period = blocks[0].interval;
-	sleeping_cycle = blocks[0].interval;
+	for (i = 0, b = blocks; i < block_count; i++, b++) {
+		block_init(b, config_get_block(i));
 
-	for (i = 1; i < block_count; i++) {
-		block = blocks + i;
-		sleeping_period = greatest_common_divisor(block->interval, sleeping_period);
-		sleeping_cycle = block->interval * sleeping_cycle / sleeping_period;
+		if (b->interval < 1) {
+			b->interval = cfg_getint(general, "interval");
+		}
+
+		sleeping_period = (i == 0) ? b->interval : greatest_common_divisor(b->interval, sleeping_period);
+		sleeping_cycle  = (i == 0) ? b->interval : b->interval * sleeping_cycle / sleeping_period;
 	}
 
 	if (pthread_mutex_init(&mutex, NULL) < 0)
 		die("could not init mutex\n");
-
-	CONDITION_INIT(&update_cond);
-	CONDITION_INIT(&sleep_cond);
-}
-
-void bar_dismiss() {
-	output_dismiss();
-
-	FOREACH_BLOCK {
-		block_clear(block);
-	}
-
-	sfree(blocks);
-
-	if (pthread_mutex_destroy(&mutex) < 0)
-		die("cound not destroy mutex\n");
-
-	CONDITION_DSTR(&update_cond);
-	CONDITION_DSTR(&sleep_cond);
-}
-
-void bar_loop() {
+	if (pthread_cond_init(&update_cond, NULL) < 0)
+		die("could not init update_cond\n");
+	if (pthread_cond_init(&sleep_cond, NULL) < 0)
+		die("could not init sleep_cond\n");
 	if (pthread_create(&thread, NULL, start_polling, NULL) < 0)
                 die("could not create polling thread\n");
 
@@ -125,8 +100,8 @@ void bar_loop() {
 	while (looping) {
 		output_begin();
 
-		FOREACH_BLOCK {
-			block_print(block);
+		for (i = 0, b = blocks; i < block_count; i++, b++) {
+			block_render(b, &output_print);
 		}
 
 		output_end();
@@ -141,17 +116,32 @@ void bar_loop() {
 		die("could not cancel polling thread\n");
 	if (pthread_join(thread, NULL) < 0)
 		die("could not join polling thread\n");
+	if (pthread_cond_destroy(&update_cond) < 0)
+		die("could not destroy update_cond\n");
+	if (pthread_cond_destroy(&sleep_cond) < 0)
+		die("could not destroy sleep_cond\n");
+	if (pthread_mutex_destroy(&mutex) < 0)
+		die("cound not destroy mutex\n");
+
+	for (i = 0, b = blocks; i < block_count; i++, b++) {
+		block_dismiss(b);
+	}
+	sfree(blocks);
+
+	output_dismiss();
 }
 
-void bar_break() {
+void bar_kill() {
 	MUTEX_LOCK;
 	looping = false;
-	CONDITION_SIGNAL(&update_cond);
+	if (pthread_cond_signal(&update_cond) < 0)
+		die("could not signal condition\n");
 	MUTEX_UNLOCK;
 }
 
 void bar_refresh() {
 	MUTEX_LOCK;
-	CONDITION_SIGNAL(&sleep_cond);
+	if (pthread_cond_signal(&sleep_cond) < 0)
+		die("could not signal condition\n");
 	MUTEX_UNLOCK;
 }

@@ -18,4 +18,6 @@ void text_putc(struct text_t *text, const char c);
 void text_putnull(struct text_t *text);
 void text_reset(struct text_t *text);
 
+void text_error(struct text_t *text, const char *msg);
+void text_errorf(struct text_t *text, const char *format, ...);
 #endif

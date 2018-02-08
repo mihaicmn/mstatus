@@ -5,12 +5,14 @@
 
 void cpu_load_routine(cfg_t *config, struct text_t *text) {
 	double loadavg[3];
-	const char *format;
 
-	if (getloadavg(loadavg, 3) != 3)
-		die("could not get loadavg\n");
+	if (getloadavg(loadavg, 3) != 3) {
+		text_error(text, "could not get loadavg");
+		return;
+	}
 
-	SET_FMTCOL_BYTHRESHOLD(loadavg[0], ABOVE);
+	text->color = color_load_threshold(config, loadavg[0], ABOVE);
+	const char *format = format_load_threshold(config, loadavg[0], ABOVE);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

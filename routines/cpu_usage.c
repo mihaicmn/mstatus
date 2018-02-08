@@ -30,12 +30,13 @@ static int get_cpu_usage(int *result) {
 
 void cpu_usage_routine(cfg_t *config, struct text_t *text) {
 	int usage;
+	if (get_cpu_usage(&usage) != 0) {
+		text_error(text, "could not read cpu usage");
+		return;
+	}
 
-	if (get_cpu_usage(&usage) != 0)
-		die("could not read cpu usage\n");
-
-	const char *format;
-	SET_FMTCOL_BYTHRESHOLD(usage, ABOVE);
+	text->color = color_load_threshold(config, usage, ABOVE);
+	const char *format = format_load_threshold(config, usage, ABOVE);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
