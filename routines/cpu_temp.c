@@ -13,7 +13,7 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text) {
 	char path[512];
 
 	const char *glob = cfg_getstr(config, "path");
-	if (file_expand(glob, path) != 0) {
+	if (file_expand(glob, path) < 0) {
 		text_errorf(text, "could not expand glob %s", glob);
 		return;
 	}

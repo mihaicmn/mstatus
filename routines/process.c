@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #include "routine.h"
 #include "util.h"
@@ -8,8 +9,13 @@
 static bool process_runs(const char *pidfile) {
 	static char path[512];
 
-	if (file_expand(pidfile, path) != 0)
+	if (file_expand(pidfile, path) != 0) {
 		return false;
+	}
+
+	if (access(path, R_OK) < 0) {
+		return false;
+	}
 
 	long pid;
 	file_scanf(path, "%ld", &pid);

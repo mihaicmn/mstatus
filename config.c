@@ -175,7 +175,7 @@ void config_load(const char *path) {
 	case CFG_SUCCESS:
 		break;
 	default:
-		die("cannot parse configuration file\n");	
+		die("cannot parse configuration file: %s\n", path);	
 	}
 }
 

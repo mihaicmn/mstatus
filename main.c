@@ -59,8 +59,15 @@ int main(int argc, char *argv[]) {
 	}
 
 	for (int i = 0; i < 9; i++) {
-		if (paths[i] != NULL && file_expand(paths[i], path) == 0)
+		if (paths[i] == NULL) {
+			continue;
+		}
+		if (file_expand(paths[i], path) != 0) {
+			continue;
+		}
+		if (access(path, R_OK) != -1) {
 			break;
+		}
 	}
 
 	config_load(path);

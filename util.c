@@ -2,7 +2,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <wordexp.h>
-#include <unistd.h>
 
 #include "util.h"
 
@@ -29,18 +28,13 @@ void sfree(void *ptr) {
 
 int file_expand(const char *glob, char *path) {
 	wordexp_t p;
-	size_t i, result = -1;
-
-	wordexp(glob, &p, 0);
-	for (i = 0; i < p.we_wordc; i++) {
-		if (access(p.we_wordv[i], R_OK) != -1) {
-			strcpy(path, p.we_wordv[i]);
-			result = 0;
-			break;
-		}
+	if (wordexp(glob, &p, 0) < 0) {
+		return -1;
 	}
+      
+	strcpy(path, p.we_wordv[0]);
 	wordfree(&p);
-	return result;
+	return 0;
 }
 
 int file_scanf(const char *file, const char *fmt, ...) {
