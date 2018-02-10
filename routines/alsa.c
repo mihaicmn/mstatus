@@ -57,7 +57,7 @@ void alsa_routine(cfg_t *config, struct text_t *text) {
 	const int cindex = cfg_getint(config, "index");
 	struct volume_t volume;
 
-	if (get_volume(cdevice, cmixer, cindex, &volume) > 0) {
+	if (get_volume(cdevice, cmixer, cindex, &volume) < 0) {
 		text_error(text, "could not get volume info");
 		return;
 	}
