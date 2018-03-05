@@ -16,18 +16,18 @@ enum status_t {
 
 struct battery_t {
 	enum status_t status;
-	float percentage;
-	float remaining;
-	float consumption;
+	double percentage;
+	double remaining;
+	double consumption;
 };
 
 static int get_battery_info(const char *path, struct battery_t *battery) {
 	int fd, count;
 	char buff[BUFF_SIZE], *cursor;
-	int charge_full = 0, charge_now = 0;
-	int energy_full = 0, energy_now = 0;
-	int current_now = 0, power_now = 0;
-	int voltage_now = 0;
+	double charge_full = 0, charge_now = 0;
+	double energy_full = 0, energy_now = 0;
+	double current_now = 0, power_now = 0;
+	double voltage_now = 0;
 
 	if ((fd = open(path, O_RDONLY)) < 0)
 		return -1;
@@ -66,40 +66,40 @@ static int get_battery_info(const char *path, struct battery_t *battery) {
 //			energy_design = atoi(cursor);
 		} else if (STARTS_WITH("ENERGY_FULL=", cursor)) {
 			cursor += 12;
-			energy_full = atoi(cursor);
+			energy_full = atof(cursor);
 		} else if (STARTS_WITH("ENERGY_NOW=", cursor)) {
 			cursor += 11;
-			energy_now = atoi(cursor);
+			energy_now = atof(cursor);
 		} else if (STARTS_WITH("POWER_NOW=", cursor)) {
 			cursor += 10;
-			power_now = atoi(cursor);
+			power_now = atof(cursor);
 //		} else if (STARTS_WITH("CHARGE_FULL_DESIGN=", cursor)) {
 //			cursor += 19;
 //			charge_design = atoi(cursor);
 		} else if (STARTS_WITH("CHARGE_FULL=", cursor)) {
 			cursor += 12;
-			charge_full = atoi(cursor);
+			charge_full = atof(cursor);
 		} else if (STARTS_WITH("CHARGE_NOW=", cursor)) {
 			cursor += 11;
-			charge_now = atoi(cursor);
+			charge_now = atof(cursor);
 		} else if (STARTS_WITH("CURRENT_NOW=", cursor)) {
 			cursor += 12;
-			current_now = atoi(cursor);
+			current_now = atof(cursor);
 		} else if (STARTS_WITH("VOLTAGE_NOW=", cursor)) {
 			cursor += 12;
-			voltage_now = atoi(cursor);
+			voltage_now = atof(cursor);
 		}
 	}
 
 	// if it applies, convert energy (mWh) to charge (mAh)
 	if (charge_full == 0)
-		charge_full = (float)(1.0 * energy_full / voltage_now * 1e6);
+		charge_full = energy_full / voltage_now * 1e6;
 
 	if (charge_now == 0)
-		charge_now = (float)(1.0 * energy_now / voltage_now * 1e6);
+		charge_now = energy_now / voltage_now * 1e6;
 
 	if (current_now == 0)
-		current_now = (float)(1.0 * power_now / voltage_now * 1e6);
+		current_now = 1.0 * power_now / voltage_now * 1e6;
 
 
 	// avoid division by zero
@@ -107,13 +107,13 @@ static int get_battery_info(const char *path, struct battery_t *battery) {
 		return -2;
 
         battery->percentage = 100 * charge_now / charge_full;
-        battery->consumption = (float)current_now / 1e12 * voltage_now;
+        battery->consumption = current_now / 1e12 * voltage_now;
 	switch (battery->status) {
 	case CHARGING:
-		battery->remaining = (float)(charge_full - charge_now) / current_now;
+		battery->remaining = (charge_full - charge_now) / current_now;
 		break;
 	case DISCHARGING:
-		battery->remaining = (float)charge_now / current_now;
+		battery->remaining = charge_now / current_now;
 		break;
 	default:
 		battery->remaining = 0;
@@ -171,7 +171,7 @@ void battery_routine(cfg_t *config, struct text_t *text) {
 		FORMAT_PRE_RESOLVE;
 		FORMAT_RESOLVE("status", "%d", battery.status);
 		FORMAT_RESOLVE("percentage", "%.00f", battery.percentage);
-		FORMAT_RESOLVE("remaining", "%02d:%02d", (int)battery.remaining, (int)(float)(battery.remaining * 60) / 60);
+		FORMAT_RESOLVE("remaining", "%02d:%02d", (int)battery.remaining, (int)((battery.remaining - (int)battery.remaining) * 60));
 		FORMAT_RESOLVE("consumption", "%0.02fW", battery.consumption);
 		FORMAT_POST_RESOLVE;
 	}
