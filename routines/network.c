@@ -224,8 +224,8 @@ void link_subroutine(cfg_t *config, void *context, struct text_t *text) {
 		}
 	}
 
-	text->color = color_load(config, color);
-	format = format_load(config, format);
+	text->color = load_color(config, color);
+	format = load_format(config, format);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
@@ -388,18 +388,14 @@ void wifi_subroutine(cfg_t *config, void *context, struct text_t *text) {
 	memset(&wifi, 0, sizeof(struct wifi_t));
 	wifi.msystem = network->msystem;
 
-	enum color_t color;
 	const char *format;
 	if (wifi_fetch(network, name, &wifi) < 0 || !wifi.essid[0]) {
-		color = COLOR_BAD;
-		format = "format_disconnected";
+		text->color = load_color(config, COLOR_BAD);
+		format = load_format(config, "format_disconnected");
 	} else {
-		color = color_by_threshold(config, wifi.strength, BELOW);
-		format = format_by_threshold(config, wifi.strength, BELOW);
+		text->color = load_color_threshold(config, wifi.strength, BELOW);
+		format = load_format_threshold(config, wifi.strength, BELOW);
 	}
-
-	text->color = color_load(config, color);
-	format = format_load(config, format);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

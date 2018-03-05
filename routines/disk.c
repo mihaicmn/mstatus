@@ -77,8 +77,8 @@ void disk_routine(cfg_t *config, struct text_t *text) {
 		return;
 	}
 
-	text->color = color_load_threshold(config, level, comparison);
-	const char *format = format_load_threshold(config, level, comparison);
+	text->color = load_color_threshold(config, level, comparison);
+	const char *format = load_format_threshold(config, level, comparison);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

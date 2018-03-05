@@ -26,8 +26,8 @@ static bool process_runs(const char *pidfile) {
 void process_routine(cfg_t *config, struct text_t *text) {
 	const bool runs = process_runs(cfg_getstr(config, "pidfile"));
 
-	text->color = color_load(config, runs ? COLOR_NORMAL : COLOR_BAD);
-	const char *format = format_load(config, runs ? "format" : "format_bad");
+	text->color = load_color(config, runs ? COLOR_NORMAL : COLOR_BAD);
+	const char *format = load_format(config, runs ? "format" : "format_bad");
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

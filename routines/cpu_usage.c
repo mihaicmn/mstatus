@@ -35,8 +35,8 @@ void cpu_usage_routine(cfg_t *config, struct text_t *text) {
 		return;
 	}
 
-	text->color = color_load_threshold(config, usage, ABOVE);
-	const char *format = format_load_threshold(config, usage, ABOVE);
+	text->color = load_color_threshold(config, usage, ABOVE);
+	const char *format = load_format_threshold(config, usage, ABOVE);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

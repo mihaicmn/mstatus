@@ -62,8 +62,8 @@ void alsa_routine(cfg_t *config, struct text_t *text) {
 		return;
 	}
 
-	text->color = color_load(config, volume.mute ? COLOR_NORMAL : COLOR_DEGRADED);
-	const char *format = format_load(config, volume.mute ? "format" : "format_muted");
+	text->color = load_color(config, volume.mute ? COLOR_NORMAL : COLOR_DEGRADED);
+	const char *format = load_format(config, volume.mute ? "format" : "format_muted");
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

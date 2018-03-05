@@ -1,7 +1,6 @@
 #include "routine.h"
 #include "util.h"
 
-
 static int get_cpu_temp(const char *path, int *result) {
 	if (file_scanf(path, "%ld", result) != 1)
 		return -1;
@@ -24,8 +23,8 @@ void cpu_temp_routine(cfg_t *config, struct text_t *text) {
 		return;
 	}
 
-	text->color = color_load_threshold(config, temp, ABOVE);
-	const char *format = format_load_threshold(config, temp, ABOVE);
+	text->color = load_color_threshold(config, temp, ABOVE);
+	const char *format = load_format_threshold(config, temp, ABOVE);
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;

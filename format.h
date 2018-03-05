@@ -35,10 +35,9 @@ enum comp_t {
 	BELOW
 };
 
-const char *color_load(cfg_t *config, enum color_t color);
-const char *format_load(cfg_t *config, const char *format);
-const char *color_load_threshold(cfg_t *config, const double value, enum comp_t comp);
-const char *format_load_threshold(cfg_t *config, const double value, enum comp_t comp);
+const char *load_color(cfg_t *config, enum color_t color);
+const char *load_format(cfg_t *config, const char *format);
 
-enum color_t color_by_threshold(cfg_t *config, const double value, enum comp_t comp);
-const char *format_by_threshold(cfg_t *config, const double value, enum comp_t comp);
+const char *load_color_threshold(cfg_t *config, const double value, enum comp_t comp);
+const char *load_format_threshold(cfg_t *config, const double value, enum comp_t comp);
+const char *load_format_threshold_fallback(cfg_t *config, const double value, enum comp_t comp, const char *fallback);

@@ -130,49 +130,49 @@ close_file:
 
 void battery_routine(cfg_t *config, struct text_t *text) {
 	struct battery_t battery;
-	const char *threshold_type;
 
 	if (get_battery_info(cfg_getstr(config, "path"), &battery) < 0) {
 		text_error(text, "could not get battery info");
 		return;
 	}
 
-	enum color_t color = COLOR_NORMAL;
-	const char *format = "format";
+	const char *format;
+	const char *threshold_type;
+
 	switch (battery.status) {
 	case FULL:
-		format = "format_full";
+		format = load_format(config, "format_full");
+		text->color = load_color(config, COLOR_NORMAL);
 		break;
 	case CHARGING:
-		format = "format_charging";
+		format = load_format(config, "format_charging");
+		text->color = load_color(config, COLOR_NORMAL);
 		break;
 	case DISCHARGING:
 		threshold_type = cfg_getstr(config, "threshold_type");
 		if (EQUALS(threshold_type, "percentage")) {
-			color = color_by_threshold(config, battery.percentage, BELOW);
-			format = format_by_threshold(config, battery.percentage, BELOW);
+			format = load_format_threshold_fallback(config, battery.percentage, BELOW, "format_discharging");
+			text->color = load_color_threshold(config, battery.percentage, BELOW);
 		} else if (EQUALS(threshold_type, "minutes")) {
-			color = color_by_threshold(config, battery.remaining / 60, BELOW);
-			format = format_by_threshold(config, battery.remaining / 60, BELOW);
-		}
-		if (EQUALS(format, "format")) {
-			format = "format_discharging";
+			format = load_format_threshold_fallback(config, battery.remaining / 60, BELOW, "format_discharging");
+			text->color = load_color_threshold(config, battery.remaining / 60, BELOW);
+		} else {
+			text_error(text, "invalid threshold type");
+			return;
 		}
 		break;
 	case UNKNOWN:
-		format = "format_unknown";
+		format = load_format(config, "format_unknown");
+		text->color = load_color(config, COLOR_NORMAL);
 		break;
 	}
 
-	text->color = color_load(config, color);
-	format = format_load(config, format);
-
-        FORMAT_WALK(format) {
-                FORMAT_PRE_RESOLVE;
-                FORMAT_RESOLVE("status", "%d", battery.status);
-                FORMAT_RESOLVE("percentage", "%.00f", battery.percentage);
-                FORMAT_RESOLVE("remaining", "%02d:%02d", (int)battery.remaining, (int)(float)(battery.remaining * 60) / 60);
-                FORMAT_RESOLVE("consumption", "%0.02fW", battery.consumption);
+	FORMAT_WALK(format) {
+		FORMAT_PRE_RESOLVE;
+		FORMAT_RESOLVE("status", "%d", battery.status);
+		FORMAT_RESOLVE("percentage", "%.00f", battery.percentage);
+		FORMAT_RESOLVE("remaining", "%02d:%02d", (int)battery.remaining, (int)(float)(battery.remaining * 60) / 60);
+		FORMAT_RESOLVE("consumption", "%0.02fW", battery.consumption);
 		FORMAT_POST_RESOLVE;
-        }
+	}
 }

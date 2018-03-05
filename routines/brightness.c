@@ -22,8 +22,8 @@ void brightness_routine(cfg_t *config, struct text_t *text) {
 		return;
 	}
 
-	text->color = color_load(config, COLOR_NORMAL);
-	const char *format = format_load(config, "format");
+	text->color = load_color(config, COLOR_NORMAL);
+	const char *format = load_format(config, "format");
 
 	FORMAT_WALK(format) {
 		FORMAT_PRE_RESOLVE;
