@@ -329,6 +329,9 @@ static int handler_get_station(struct nl_msg *msg, void *arg) {
 	if (nla_parse_nested(tb_sta, NL80211_STA_INFO_MAX, tb_attr[NL80211_ATTR_STA_INFO], sta_policy) < 0)
 		return NL_SKIP;
 
+	if (tb_sta[NL80211_STA_INFO_RX_BITRATE] == NULL)
+		return NL_SKIP;
+
 	if (nla_parse_nested(tb_rxrate, NL80211_RATE_INFO_MAX, tb_sta[NL80211_STA_INFO_RX_BITRATE], rate_policy) < 0)
 		return NL_SKIP;
 
